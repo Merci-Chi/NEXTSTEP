@@ -45,6 +45,110 @@
         linear-gradient(180deg, #05101f 0%, #020812 100%);
     }
 
+    body.locked .app {
+      display: none;
+    }
+
+    body.logged-in .login-screen {
+      display: none;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(107, 145, 255, 0.2), transparent 35%),
+        linear-gradient(180deg, #05101f 0%, #020812 100%);
+    }
+
+    .login-card {
+      width: min(430px, 100%);
+      padding: 34px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(9, 20, 37, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 28px;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .login-card h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: -0.04em;
+    }
+
+    .login-card p {
+      margin: 0 0 26px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      color: #d9e0ef;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .field input {
+      width: 100%;
+      height: 52px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: rgba(5, 15, 28, 0.95);
+      color: var(--text);
+      font: inherit;
+      padding: 0 15px;
+      outline: none;
+    }
+
+    .field input:focus {
+      border-color: rgba(107, 145, 255, 0.65);
+      box-shadow: 0 0 0 3px rgba(107, 145, 255, 0.12);
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 54px;
+      margin-top: 8px;
+      border: 1px solid rgba(138, 159, 255, 0.18);
+      border-radius: 9px;
+      background: linear-gradient(180deg, #344383, #26366f);
+      color: white;
+      font: inherit;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .login-btn:hover {
+      background: linear-gradient(180deg, #40519a, #304182);
+    }
+
+    .login-error {
+      min-height: 22px;
+      margin-top: 15px;
+      color: #ff7b8b;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
     .app {
       display: grid;
       grid-template-columns: 280px 1fr;
@@ -61,6 +165,28 @@
       display: flex;
       flex-direction: column;
       gap: 22px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(107, 145, 255, 0.65) rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 999px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: rgba(107, 145, 255, 0.65);
+      border-radius: 999px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: rgba(107, 145, 255, 0.9);
     }
 
     .brand {
@@ -69,6 +195,7 @@
       gap: 12px;
       font-weight: 800;
       font-size: 22px;
+      flex-shrink: 0;
     }
 
     .logo {
@@ -80,6 +207,7 @@
         linear-gradient(225deg, #385cf4 0 45%, transparent 45%),
         linear-gradient(315deg, #8d65ff 0 45%, transparent 45%);
       box-shadow: 0 10px 30px rgba(91, 123, 255, 0.35);
+      flex-shrink: 0;
     }
 
     .section-title {
@@ -137,6 +265,7 @@
     .nav {
       border-top: 1px solid var(--border);
       padding-top: 16px;
+      flex-shrink: 0;
     }
 
     .nav-item {
@@ -152,12 +281,13 @@
     }
 
     .profile {
-      margin-top: auto;
       border-top: 1px solid var(--border);
       padding-top: 18px;
+      padding-bottom: 8px;
       display: flex;
       align-items: center;
       gap: 12px;
+      flex-shrink: 0;
     }
 
     .avatar {
@@ -170,6 +300,7 @@
       color: #111;
       font-weight: 800;
       border: 2px solid rgba(255, 255, 255, 0.18);
+      flex-shrink: 0;
     }
 
     .profile strong {
@@ -180,6 +311,22 @@
     .profile span {
       color: var(--muted);
       font-size: 13px;
+    }
+
+    .logout-btn {
+      width: 100%;
+      height: 44px;
+      border: 1px solid rgba(255, 61, 85, 0.25);
+      border-radius: 9px;
+      background: rgba(255, 61, 85, 0.08);
+      color: #ff9aa6;
+      font: inherit;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 61, 85, 0.14);
     }
 
     main {
@@ -391,6 +538,7 @@
       .sidebar {
         position: static;
         height: auto;
+        max-height: none;
       }
 
       main {
@@ -414,7 +562,33 @@
   </style>
 </head>
 
-<body>
+<body class="locked">
+  <section class="login-screen">
+    <form class="login-card" id="loginForm">
+      <div class="login-brand">
+        <div class="logo"></div>
+        <span>ClientFlow</span>
+      </div>
+
+      <h1>Login</h1>
+      <p>Sign in to access your client dashboard.</p>
+
+      <div class="field">
+        <label for="username">User</label>
+        <input id="username" type="text" autocomplete="username" placeholder="DEV" required />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="password" required />
+      </div>
+
+      <button class="login-btn" type="submit">Sign In</button>
+
+      <div class="login-error" id="loginError"></div>
+    </form>
+  </section>
+
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
@@ -508,20 +682,22 @@
       </nav>
 
       <div class="profile">
-        <div class="avatar">AC</div>
+        <div class="avatar" id="userAvatar">DV</div>
         <div>
-          <strong>Alex Carter</strong>
+          <strong id="sidebarUserName">DEV</strong>
           <span>Administrator</span>
         </div>
         <span class="chevron">⌄</span>
       </div>
+
+      <button class="logout-btn" id="logoutBtn" type="button">Log Out</button>
     </aside>
 
     <main>
       <header class="topbar">
         <div>
           <h1>Dashboard</h1>
-          <p class="welcome">Welcome back, Alex.</p>
+          <p class="welcome">Welcome back, <span id="welcomeName">DEV</span>.</p>
         </div>
 
         <div class="tools">
@@ -614,6 +790,65 @@
   </div>
 
   <script>
+    const VALID_USER = "dev";
+    const VALID_PASSWORD = "password";
+
+    const loginForm = document.getElementById("loginForm");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const loginError = document.getElementById("loginError");
+    const welcomeName = document.getElementById("welcomeName");
+    const sidebarUserName = document.getElementById("sidebarUserName");
+    const userAvatar = document.getElementById("userAvatar");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    function setLoggedInUser(username) {
+      const displayName = username.toUpperCase();
+
+      welcomeName.textContent = displayName;
+      sidebarUserName.textContent = displayName;
+      userAvatar.textContent = displayName.slice(0, 2);
+
+      document.body.classList.remove("locked");
+      document.body.classList.add("logged-in");
+
+      localStorage.setItem("clientflow_user", displayName);
+    }
+
+    function logout() {
+      localStorage.removeItem("clientflow_user");
+
+      document.body.classList.remove("logged-in");
+      document.body.classList.add("locked");
+
+      usernameInput.value = "";
+      passwordInput.value = "";
+      loginError.textContent = "";
+      usernameInput.focus();
+    }
+
+    loginForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (username.toLowerCase() === VALID_USER && password === VALID_PASSWORD) {
+        setLoggedInUser(username);
+        return;
+      }
+
+      loginError.textContent = "Invalid user or password.";
+    });
+
+    logoutBtn.addEventListener("click", logout);
+
+    const savedUser = localStorage.getItem("clientflow_user");
+
+    if (savedUser) {
+      setLoggedInUser(savedUser);
+    }
+
     const icons = {
       file: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg>`,
       coin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-5a3 3 0 0 0 0 6h2a3 3 0 0 1 0 6H8"/><path d="M12 6v2M12 20v-2"/></svg>`,
