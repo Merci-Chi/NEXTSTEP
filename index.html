@@ -2052,9 +2052,6 @@
     </div>
 
     <script>
-      // =========================
-      // Config
-      // =========================
       const VALID_USER = "dev";
       const VALID_PASSWORD = "password";
 
@@ -2261,9 +2258,6 @@
         Finished: "green",
       };
 
-      // =========================
-      // DOM references
-      // =========================
       const loginForm = document.getElementById("loginForm");
       const usernameInput = document.getElementById("username");
       const passwordInput = document.getElementById("password");
@@ -2279,9 +2273,6 @@
       const projectSearch = document.getElementById("projectSearch");
       const dashboardEditBtn = document.getElementById("dashboardEditBtn");
 
-      // =========================
-      // App state
-      // =========================
       let projects = loadProjects();
       let activeProjectId = null;
       let projectInfoOpen = false;
@@ -2299,10 +2290,6 @@
       let saveMessageTimer = null;
       let copyBlockPopupOpen = false;
       let copyBlockDraft = defaultCopyBlockDraft();
-
-      // =========================
-      // Helpers and formatters
-      // =========================
 
       function uid() {
         return `id-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -3209,10 +3196,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         return block.content || "Empty copy block.";
       }
 
-      // =========================
-      // Storage and data normalization
-      // =========================
-
       function defaultProjects() {
         return [
           {
@@ -3443,10 +3426,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         return (ICON_GROUPS[categoryId] || []).map((icon) => `solid:${icon}`);
       }
 
-      // =========================
-      // Authentication
-      // =========================
-
       function setLoggedInUser(username) {
         const displayName = username.toUpperCase();
 
@@ -3471,10 +3450,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         loginError.textContent = "";
         usernameInput.focus();
       }
-
-      // =========================
-      // Rendering
-      // =========================
 
       function renderIconPicker(project) {
         const iconsForCategory = categoryIcons(iconPickerCategory);
@@ -4059,10 +4034,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
       `;
       }
 
-      // =========================
-      // Project actions
-      // =========================
-
       function findProject(projectId) {
         return projects.find((project) => project.id === projectId);
       }
@@ -4205,10 +4176,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         saveProjectUpdates("color", color);
         renderProjectDetails();
       }
-
-      // =========================
-      // Copy block actions
-      // =========================
 
       function addCopyBlock(type = "text") {
         copyBlockDraft = defaultCopyBlockDraft(normalizeCopyBlockFormat(type));
@@ -4373,10 +4340,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           if (activeProjectId === project.id) renderProjectDetails();
         }, 1200);
       }
-
-      // =========================
-      // Note and checklist actions
-      // =========================
 
       function toggleTopChecklist() {
         const project = findProject(activeProjectId);
@@ -4618,10 +4581,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         saveProjects();
         renderProjectDetails();
       }
-
-      // =========================
-      // Event binding and app startup
-      // =========================
 
       function hydrateStaticIcons() {
         document.querySelectorAll("[data-icon]").forEach((element) => {
