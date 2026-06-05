@@ -431,8 +431,8 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(260px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 18px;
     }
 
     .view {
@@ -444,8 +444,9 @@
     }
 
     .card {
-      min-height: 382px;
-      padding: 27px;
+      aspect-ratio: 1;
+      min-height: 0;
+      padding: 20px;
       border-radius: var(--radius);
       border: 1px solid var(--border);
       background:
@@ -455,6 +456,8 @@
       display: flex;
       flex-direction: column;
       transition: 0.2s ease;
+      overflow: hidden;
+      cursor: pointer;
     }
 
     .card:hover {
@@ -463,39 +466,40 @@
     }
 
     .icon-box {
-      width: 70px;
-      height: 70px;
+      width: 58px;
+      height: 58px;
       border-radius: 10px;
       display: grid;
       place-items: center;
       border: 1px solid rgba(135, 160, 208, 0.25);
       background: rgba(8, 19, 35, 0.58);
-      margin-bottom: 26px;
+      margin-bottom: 18px;
     }
 
     .icon-box svg {
-      width: 38px;
-      height: 38px;
+      width: 31px;
+      height: 31px;
     }
 
     .card h2 {
       margin: 0 0 8px;
-      font-size: 27px;
+      font-size: 21px;
       letter-spacing: -0.04em;
     }
 
     .type {
       color: var(--blue);
-      font-size: 18px;
+      font-size: 15px;
       font-weight: 500;
-      margin-bottom: 17px;
+      margin-bottom: 12px;
     }
 
     .desc {
       color: var(--muted);
-      font-size: 17px;
+      font-size: 15px;
       line-height: 1.45;
       margin: 0;
+      display: none;
     }
 
     .status {
@@ -505,7 +509,20 @@
       gap: 10px;
       color: #c8d0df;
       font-size: 15px;
-      padding-top: 28px;
+      padding-top: 14px;
+    }
+
+    .card.expanded .desc {
+      display: block;
+      max-height: 72px;
+      overflow: hidden;
+    }
+
+    .card.expanded .desc.overflowing {
+      margin: auto -20px -20px;
+      padding: 14px 20px 16px;
+      color: #dce5ff;
+      background: linear-gradient(180deg, rgba(5, 15, 28, 0), rgba(5, 15, 28, 0.94) 28%, rgba(5, 15, 28, 0.98));
     }
 
     .dot {
@@ -522,7 +539,7 @@
     .dot.danger { background: var(--danger); }
 
     .open-btn {
-      margin-top: 28px;
+      margin-top: 14px;
       width: 100%;
       height: 54px;
       border: 1px solid rgba(138, 159, 255, 0.18);
@@ -540,7 +557,8 @@
     }
 
     .add-project-card {
-      min-height: 382px;
+      aspect-ratio: 1;
+      min-height: 0;
       border-radius: var(--radius);
       border: 1px dashed rgba(255, 255, 255, 0.3);
       background: rgba(255, 255, 255, 0.055);
@@ -721,6 +739,13 @@
       font-size: 15px;
     }
 
+    .save-state {
+      margin-left: 4px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
     .project-actions {
       display: flex;
       gap: 10px;
@@ -807,6 +832,12 @@
       gap: 14px;
     }
 
+    .copy-block.edit-compact {
+      min-height: 74px;
+      grid-template-rows: auto;
+      align-items: center;
+    }
+
     .copy-block-top,
     .copy-block-actions {
       display: flex;
@@ -821,6 +852,13 @@
       font-size: 18px;
       font-weight: 700;
       overflow-wrap: anywhere;
+    }
+
+    .copy-reorder {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .copy-button {
@@ -936,14 +974,28 @@
     }
 
     .note-preview {
-      min-height: 78px;
+      min-height: 96px;
       max-height: 118px;
+      border: 1px dashed rgba(126, 151, 190, 0.28);
+      border-radius: 12px;
+      padding: 18px;
       color: var(--muted);
       line-height: 1.55;
       white-space: pre-wrap;
       overflow: hidden;
       overflow-wrap: anywhere;
       cursor: pointer;
+    }
+
+    .note-preview.empty {
+      display: grid;
+      place-items: center;
+      color: #dce5ff;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .note-copy-inline {
+      justify-self: end;
     }
 
     .note-preview.expanded {
@@ -969,6 +1021,10 @@
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+
+    .check-row {
+      overflow: visible;
     }
 
     .note-title-row {
@@ -1006,6 +1062,16 @@
       font: inherit;
       padding: 0 12px;
       outline: none;
+      overflow: visible;
+    }
+
+    .check-input.wrap {
+      min-height: 42px;
+      height: auto;
+      padding: 10px 12px;
+      white-space: normal;
+      overflow: visible;
+      line-height: 1.35;
     }
 
     .modal {
@@ -1719,6 +1785,11 @@
     let iconPickerPage = 0;
     let dashboardEditing = false;
     let expandedNoteId = null;
+    let expandedProjectCardId = "";
+    let copyBlocksEditing = false;
+    let activeNoteCopyId = "";
+    let draggedNoteId = "";
+    let saveMessageTimer = null;
 
     function uid() {
       return `id-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -1885,6 +1956,19 @@
       }));
 
       localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(storable));
+      showSaveState();
+    }
+
+    function showSaveState() {
+      const state = document.getElementById("saveState");
+      if (!state) return;
+
+      state.textContent = "Saved";
+      window.clearTimeout(saveMessageTimer);
+      saveMessageTimer = window.setTimeout(() => {
+        const nextState = document.getElementById("saveState");
+        if (nextState) nextState.textContent = "";
+      }, 1400);
     }
 
     function taskLabel(project) {
@@ -2026,17 +2110,17 @@
       });
 
       projectGrid.innerHTML = visibleProjects.map((project) => `
-        <article class="card">
+        <article class="card ${expandedProjectCardId === project.id ? "expanded" : ""}" data-project-card="${escapeHtml(project.id)}">
           ${dashboardEditing ? `<button class="small-btn danger card-delete-btn" type="button" data-delete-project="${escapeHtml(project.id)}" aria-label="Delete project">${iconSvg("trash")}</button>` : ""}
           <div class="icon-box ${escapeHtml(project.color)}">${iconSvg(project.icon)}</div>
           <h2>${escapeHtml(project.title)}</h2>
           <div class="type">${escapeHtml(taskLabel(project))}</div>
-          <p class="desc">${escapeHtml(project.description)}</p>
+          <p class="desc ${project.description.length > 92 ? "overflowing" : ""}">${escapeHtml(project.description)}</p>
           <div class="status">
             ${dotHtml(project.status)}
             ${escapeHtml(project.status)}
           </div>
-          <button class="open-btn" type="button" data-open-project="${escapeHtml(project.id)}">Open Project</button>
+          ${expandedProjectCardId === project.id ? `<button class="open-btn" type="button" data-open-project="${escapeHtml(project.id)}">Open Project</button>` : ""}
         </article>
       `).join("") + `
         <button class="add-project-card" type="button" data-command="add-project" aria-label="Add project">
@@ -2127,6 +2211,7 @@
                 <div class="project-status-line">
                   ${dotHtml(project.status)}
                   <span>${escapeHtml(project.status)}</span>
+                  <span class="save-state" id="saveState"></span>
                 </div>
               </div>
             </div>
@@ -2156,7 +2241,10 @@
           <section class="project-panel copy-section">
             <div class="copy-section-head">
               <h2>Copy Blocks</h2>
-              <button class="add-block-btn" type="button" data-command="add-copy-block">${iconSvg("plus")} Add Copy Block</button>
+              <div class="copy-block-actions">
+                ${project.copyBlocks.length ? `<button class="small-btn" type="button" data-command="toggle-copy-edit-mode">${copyBlocksEditing ? "Done" : "Edit"}</button>` : ""}
+                <button class="add-block-btn" type="button" data-command="add-copy-block">${iconSvg("plus")} Add Copy Block</button>
+              </div>
             </div>
 
             <div class="copy-block-grid" id="copyBlocks">
@@ -2230,22 +2318,30 @@
         return `<div class="empty-blocks">No copy blocks yet.</div>`;
       }
 
-      return project.copyBlocks.map((block) => {
+      return project.copyBlocks.map((block, index) => {
         const collapsed = !block.expanded;
         const previewClass = `copy-preview ${block.format === "code" ? "code" : ""} ${collapsed ? "collapsed" : "expanded"}`;
 
         return `
-          <article class="copy-block" data-block-id="${escapeHtml(block.id)}">
+          <article class="copy-block ${copyBlocksEditing ? "edit-compact" : ""}" data-block-id="${escapeHtml(block.id)}">
             <div class="copy-block-top">
               <div class="copy-block-title">${escapeHtml(block.label)}</div>
               <div class="copy-block-actions">
-                <span class="copy-confirm">${block.copied ? "Copied!" : ""}</span>
-                <button class="copy-button" type="button" data-command="copy-block" data-block-id="${escapeHtml(block.id)}" aria-label="Copy block">${iconSvg("copy")}</button>
-                <button class="small-btn block-icon-button" type="button" data-command="edit-block" data-block-id="${escapeHtml(block.id)}" aria-label="${block.editing ? "Done editing" : "Edit block"}">${iconSvg(block.editing ? "check" : "edit")}</button>
+                ${copyBlocksEditing ? `
+                  <div class="copy-reorder">
+                    <button class="small-btn block-icon-button" type="button" data-command="move-copy-block" data-block-id="${escapeHtml(block.id)}" data-direction="up" ${index === 0 ? "disabled" : ""} aria-label="Move up">↑</button>
+                    <button class="small-btn block-icon-button" type="button" data-command="move-copy-block" data-block-id="${escapeHtml(block.id)}" data-direction="down" ${index === project.copyBlocks.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button>
+                    <button class="small-btn danger block-icon-button" type="button" data-command="delete-block" data-block-id="${escapeHtml(block.id)}" aria-label="Delete block">${iconSvg("trash")}</button>
+                  </div>
+                ` : `
+                  <span class="copy-confirm">${block.copied ? "Copied!" : ""}</span>
+                  <button class="copy-button" type="button" data-command="copy-block" data-block-id="${escapeHtml(block.id)}" aria-label="Copy block">${iconSvg("copy")}</button>
+                  <button class="small-btn block-icon-button" type="button" data-command="edit-block" data-block-id="${escapeHtml(block.id)}" aria-label="Edit all copy blocks">${iconSvg("edit")}</button>
+                `}
               </div>
             </div>
 
-            ${block.editing ? `
+            ${copyBlocksEditing ? "" : block.editing ? `
               <div class="copy-edit-grid">
                 <div class="copy-edit-row">
                   <div class="field">
@@ -2269,14 +2365,11 @@
               <div class="${previewClass}" data-command="toggle-block" data-block-id="${escapeHtml(block.id)}" title="${collapsed ? "Expand" : "Collapse"}">${escapeHtml(block.content || "Empty copy block.")}</div>
             `}
 
-            <div class="copy-block-actions">
-              ${block.editing ? `
-                <button class="small-btn" type="button" data-command="move-copy-block" data-block-id="${escapeHtml(block.id)}" data-direction="up">Move Up</button>
-                <button class="small-btn" type="button" data-command="move-copy-block" data-block-id="${escapeHtml(block.id)}" data-direction="down">Move Down</button>
-              ` : ""}
-              <button class="small-btn" type="button" data-command="toggle-block" data-block-id="${escapeHtml(block.id)}">${block.expanded ? "Collapse" : "Expand"}</button>
-              <button class="small-btn danger" type="button" data-command="delete-block" data-block-id="${escapeHtml(block.id)}">${iconSvg("trash")} Delete</button>
-            </div>
+            ${copyBlocksEditing ? "" : `
+              <div class="copy-block-actions">
+                <button class="small-btn" type="button" data-command="toggle-block" data-block-id="${escapeHtml(block.id)}">${block.expanded ? "Collapse" : "Expand"}</button>
+              </div>
+            `}
           </article>
         `;
       }).join("");
@@ -2291,23 +2384,26 @@
         const isNote = block.type === "note";
 
         return `
-          <article class="note-block" data-note-id="${escapeHtml(block.id)}">
+          <article class="note-block" data-note-id="${escapeHtml(block.id)}" data-note-kind="${escapeHtml(block.type)}" ${!isNote ? `draggable="true"` : ""}>
             <div class="note-title-row">
-              <input class="check-input" type="text" value="${escapeHtml(block.title)}" data-note-field="title" data-note-id="${escapeHtml(block.id)}" aria-label="${isNote ? "Note" : "Checklist"} title" />
+              <div></div>
               <div class="copy-block-actions">
-                ${isNote ? `<button class="small-btn" type="button" data-command="expand-note" data-note-id="${escapeHtml(block.id)}">${iconSvg("edit")} Expand</button>` : `<button class="small-btn" type="button" data-command="add-check-item" data-note-id="${escapeHtml(block.id)}">${iconSvg("plus")} Checkbox</button>`}
+                ${isNote && block.content ? `<button class="small-btn note-copy-inline" type="button" data-command="copy-note" data-note-id="${escapeHtml(block.id)}">${iconSvg("copy")} Copy</button>` : ""}
+                ${!isNote ? `<button class="small-btn" type="button" data-command="add-check-item" data-note-id="${escapeHtml(block.id)}">${iconSvg("plus")} Checkbox</button>` : ""}
                 <button class="small-btn danger" type="button" data-command="delete-note-block" data-note-id="${escapeHtml(block.id)}">${iconSvg("trash")} Delete</button>
               </div>
             </div>
 
             ${isNote ? `
-              <div class="note-preview ${block.expanded ? "expanded" : ""}" data-command="expand-note" data-note-id="${escapeHtml(block.id)}">${escapeHtml(block.content || "Empty note.")}</div>
+              <div class="note-preview ${block.content ? "" : "empty"}" data-command="expand-note" data-note-id="${escapeHtml(block.id)}">
+                ${block.content ? escapeHtml(block.content) : `<span class="add-project-plus">${iconSvg("plus")}</span><span>Tap to write</span>`}
+              </div>
             ` : `
               <div class="check-list">
                 ${block.items.map((item) => `
                   <div class="check-row" data-check-id="${escapeHtml(item.id)}">
                     <button class="check-toggle ${item.checked ? "checked" : ""}" type="button" data-command="toggle-check-item" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" aria-label="Toggle checkbox">${item.checked ? iconSvg("check") : ""}</button>
-                    <input class="check-input" type="text" value="${escapeHtml(item.text)}" data-check-field="text" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" placeholder="Checkbox item" />
+                    <textarea class="check-input wrap" rows="1" data-check-field="text" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" placeholder="Checkbox item">${escapeHtml(item.text)}</textarea>
                     <button class="small-btn danger block-icon-button" type="button" data-command="delete-check-item" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" aria-label="Delete checkbox">${iconSvg("trash")}</button>
                   </div>
                 `).join("")}
@@ -2326,12 +2422,11 @@
         <div class="modal open" data-modal="expanded-note">
           <section class="sheet expanded-note" role="dialog" aria-modal="true" aria-labelledby="expandedNoteTitle">
             <div class="sheet-head">
-              <h2 id="expandedNoteTitle">${escapeHtml(note.title || "Note")}</h2>
+              <h2 id="expandedNoteTitle">Note</h2>
               <button class="small-btn" type="button" data-command="close-expanded-note">${iconSvg("xmark")} Close</button>
             </div>
             <div class="note-popup-body">
-              <input class="check-input" type="text" value="${escapeHtml(note.title)}" data-note-field="title" data-note-id="${escapeHtml(note.id)}" aria-label="Expanded note title" />
-              <textarea class="note-popup-field" data-note-field="content" data-note-id="${escapeHtml(note.id)}" placeholder="Write note details here">${escapeHtml(note.content || "")}</textarea>
+              <textarea class="note-popup-field" data-note-field="content" data-note-id="${escapeHtml(note.id)}">${escapeHtml(note.content || "")}</textarea>
             </div>
           </section>
         </div>
@@ -2393,7 +2488,7 @@
         content: "",
         format: "text",
         expanded: false,
-        editing: true,
+        editing: false,
         copied: false
       });
 
@@ -2470,6 +2565,18 @@
       saveProjects();
     }
 
+    function removeEmptyCheckItem(noteId, checkId) {
+      const project = findProject(activeProjectId);
+      const note = project?.noteBlocks.find((item) => item.id === noteId);
+      const item = note?.items.find((check) => check.id === checkId);
+      if (!note || !item || item.text.trim()) return;
+
+      note.items = note.items.filter((check) => check.id !== checkId);
+      if (!note.items.length) note.items.push({ id: uid(), text: "", checked: false });
+      saveProjects();
+      renderProjectDetails();
+    }
+
     function toggleCheckItem(noteId, checkId) {
       const project = findProject(activeProjectId);
       const note = project?.noteBlocks.find((item) => item.id === noteId);
@@ -2492,6 +2599,22 @@
       renderProjectDetails();
     }
 
+    function insertCheckItemAfter(noteId, checkId) {
+      const project = findProject(activeProjectId);
+      const note = project?.noteBlocks.find((item) => item.id === noteId);
+      if (!note) return;
+
+      const index = note.items.findIndex((item) => item.id === checkId);
+      const next = { id: uid(), text: "", checked: false };
+      note.items.splice(index >= 0 ? index + 1 : note.items.length, 0, next);
+      saveProjects();
+      renderProjectDetails();
+
+      window.requestAnimationFrame(() => {
+        document.querySelector(`[data-check-id="${next.id}"][data-check-field="text"]`)?.focus();
+      });
+    }
+
     function expandNote(noteId) {
       expandedNoteId = noteId;
       renderProjectDetails();
@@ -2499,6 +2622,40 @@
 
     function closeExpandedNote() {
       expandedNoteId = null;
+      renderProjectDetails();
+    }
+
+    async function copyNoteContent(noteId) {
+      const project = findProject(activeProjectId);
+      const note = project?.noteBlocks.find((block) => block.id === noteId);
+      if (!note) return;
+
+      try {
+        await navigator.clipboard.writeText(note.content || "");
+      } catch {
+        const helper = document.createElement("textarea");
+        helper.value = note.content || "";
+        helper.style.position = "fixed";
+        helper.style.opacity = "0";
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand("copy");
+        helper.remove();
+      }
+    }
+
+    function moveNoteBlock(sourceId, targetId, afterTarget = false) {
+      const project = findProject(activeProjectId);
+      if (!project || sourceId === targetId) return;
+
+      const sourceIndex = project.noteBlocks.findIndex((block) => block.id === sourceId);
+      const targetIndex = project.noteBlocks.findIndex((block) => block.id === targetId);
+      if (sourceIndex < 0 || targetIndex < 0) return;
+
+      const [source] = project.noteBlocks.splice(sourceIndex, 1);
+      const adjustedTarget = project.noteBlocks.findIndex((block) => block.id === targetId);
+      project.noteBlocks.splice(afterTarget ? adjustedTarget + 1 : adjustedTarget, 0, source);
+      saveProjects();
       renderProjectDetails();
     }
 
@@ -2514,10 +2671,12 @@
 
     function editCopyBlock(blockId) {
       const project = findProject(activeProjectId);
-      const block = project?.copyBlocks.find((item) => item.id === blockId);
-      if (!block) return;
+      if (!project?.copyBlocks.length) return;
 
-      block.editing = !block.editing;
+      copyBlocksEditing = !copyBlocksEditing;
+      project.copyBlocks.forEach((block) => {
+        block.editing = false;
+      });
       saveProjects();
       renderProjectDetails();
     }
@@ -2590,6 +2749,7 @@
       const addButton = event.target.closest("[data-command='add-project']");
       const deleteButton = event.target.closest("[data-delete-project]");
       const button = event.target.closest("[data-open-project]");
+      const card = event.target.closest("[data-project-card]");
 
       if (addButton) {
         addProject();
@@ -2601,7 +2761,15 @@
         return;
       }
 
-      if (button) openProject(button.dataset.openProject);
+      if (button) {
+        openProject(button.dataset.openProject);
+        return;
+      }
+
+      if (card) {
+        expandedProjectCardId = expandedProjectCardId === card.dataset.projectCard ? "" : card.dataset.projectCard;
+        renderDashboardProjectCards();
+      }
     });
 
     projectView.addEventListener("input", (event) => {
@@ -2640,6 +2808,64 @@
       }
     });
 
+    projectView.addEventListener("keydown", (event) => {
+      const checkField = event.target.dataset.checkField;
+      if (checkField && event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        insertCheckItemAfter(event.target.dataset.noteId, event.target.dataset.checkId);
+      }
+    });
+
+    projectView.addEventListener("focusout", (event) => {
+      if (event.target.dataset.checkField) {
+        removeEmptyCheckItem(event.target.dataset.noteId, event.target.dataset.checkId);
+      }
+    });
+
+    projectView.addEventListener("dragstart", (event) => {
+      const block = event.target.closest("[data-note-kind='checklist']");
+      if (!block) return;
+
+      draggedNoteId = block.dataset.noteId;
+      block.classList.add("dragging");
+      event.dataTransfer.effectAllowed = "move";
+    });
+
+    projectView.addEventListener("dragover", (event) => {
+      const block = event.target.closest("[data-note-kind='checklist']");
+      if (!block || !draggedNoteId || block.dataset.noteId === draggedNoteId) return;
+
+      event.preventDefault();
+      const rect = block.getBoundingClientRect();
+      const after = event.clientY > rect.top + rect.height / 2;
+      block.classList.toggle("drop-before", !after);
+      block.classList.toggle("drop-after", after);
+    });
+
+    projectView.addEventListener("dragleave", (event) => {
+      const block = event.target.closest("[data-note-kind='checklist']");
+      if (!block) return;
+
+      block.classList.remove("drop-before", "drop-after");
+    });
+
+    projectView.addEventListener("drop", (event) => {
+      const block = event.target.closest("[data-note-kind='checklist']");
+      if (!block || !draggedNoteId) return;
+
+      event.preventDefault();
+      const after = block.classList.contains("drop-after");
+      moveNoteBlock(draggedNoteId, block.dataset.noteId, after);
+      draggedNoteId = "";
+    });
+
+    projectView.addEventListener("dragend", () => {
+      draggedNoteId = "";
+      projectView.querySelectorAll(".dragging, .drop-before, .drop-after").forEach((element) => {
+        element.classList.remove("dragging", "drop-before", "drop-after");
+      });
+    });
+
     projectView.addEventListener("click", (event) => {
       const button = event.target.closest("[data-command]");
       if (!button) return;
@@ -2672,6 +2898,10 @@
         renderProjectDetails();
       }
       if (command === "add-copy-block") addCopyBlock();
+      if (command === "toggle-copy-edit-mode") {
+        copyBlocksEditing = !copyBlocksEditing;
+        renderProjectDetails();
+      }
       if (command === "toggle-block") toggleCopyBlock(blockId);
       if (command === "edit-block") editCopyBlock(blockId);
       if (command === "set-block-format") updateCopyBlock(blockId, "format", button.dataset.format);
@@ -2685,6 +2915,7 @@
       if (command === "delete-check-item") deleteCheckItem(button.dataset.noteId, button.dataset.checkId);
       if (command === "expand-note") expandNote(button.dataset.noteId);
       if (command === "close-expanded-note") closeExpandedNote();
+      if (command === "copy-note") copyNoteContent(button.dataset.noteId);
     });
 
     projectView.addEventListener("click", (event) => {
