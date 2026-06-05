@@ -20,21 +20,15 @@
 
     <style>
       :root {
-        --bg: #020b18;
-        --sidebar: #071323;
         --panel: rgba(13, 25, 44, 0.86);
-        --panel-2: rgba(17, 32, 55, 0.92);
         --border: rgba(126, 151, 190, 0.18);
         --text: #f6f8ff;
         --muted: #aeb8cb;
-        --soft: #758299;
         --blue: #6b91ff;
         --purple: #a985ff;
         --green: #56df9a;
         --yellow: #ffba35;
         --danger: #ff3d55;
-        --button: #2a3978;
-        --button-hover: #33458d;
         --shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
         --radius: 14px;
       }
@@ -471,6 +465,7 @@
       }
 
       .card {
+        position: relative;
         min-height: 118px;
         height: 118px;
         padding: 18px;
@@ -624,9 +619,6 @@
         z-index: 2;
       }
 
-      .card {
-        position: relative;
-      }
 
       .card.expanded .desc {
         display: block;
@@ -1003,10 +995,6 @@
         top: calc(100% + 8px);
       }
 
-      /* =========================
-       Copy Blocks
-    ========================= */
-
       .copy-block {
         min-height: 150px;
         border: 1px solid var(--border);
@@ -1104,8 +1092,6 @@
         text-align: right;
       }
 
-      /* Copy previews */
-
       .copy-preview {
         min-height: 52px;
         max-height: 64px;
@@ -1131,8 +1117,6 @@
         max-height: none;
         overflow: visible;
       }
-
-      /* URL preview */
 
       .copy-preview.url {
         min-height: 42px;
@@ -1160,8 +1144,6 @@
         border-color: rgba(107, 145, 255, 0.52);
         background: rgba(19, 34, 58, 0.9);
       }
-
-      /* Code preview */
 
       .copy-preview.code {
         min-height: 118px;
@@ -1224,8 +1206,6 @@
         transform: translateY(-1px);
       }
 
-      /* Copy block editor */
-
       .copy-edit-grid {
         display: grid;
         gap: 14px;
@@ -1262,7 +1242,7 @@
         min-height: 260px;
         max-height: none;
       }
-      
+
       .format-row {
         display: flex;
         gap: 9px;
@@ -1337,7 +1317,7 @@
         resize: vertical;
         outline: none;
       }
-      
+
       .checklist-top-btn {
         min-width: 52px;
         padding: 0;
@@ -1355,7 +1335,8 @@
         background: rgba(9, 20, 37, 0.72);
         padding: 14px;
       }
-      
+
+      .note-title-row,
       .check-row {
         display: flex;
         align-items: center;
@@ -1743,14 +1724,14 @@
       }
 
       .blue { color: var(--blue); }
-	  .purple { color: var(--purple); }
-	  .green { color: var(--green); }
-	  .yellow { color: var(--yellow); }
-	  .cyan { color: #62c6d7; }
-	  .pink { color: #ff74ba; }
-	  .orange { color: #ff9a52; }
-	  .red { color: var(--danger); }
-	  .white { color: #ffffff; }
+      .purple { color: var(--purple); }
+      .green { color: var(--green); }
+      .yellow { color: var(--yellow); }
+      .cyan { color: #62c6d7; }
+      .pink { color: #ff74ba; }
+      .orange { color: #ff9a52; }
+      .red { color: var(--danger); }
+      .white { color: #ffffff; }
 
       @media (max-width: 1180px) {
         .app {
@@ -1852,7 +1833,7 @@
           grid-template-columns: 1fr;
         }
       }
-    </style>
+</style>
   </head>
 
   <body class="locked">
@@ -1872,7 +1853,7 @@
             id="username"
             type="text"
             autocomplete="username"
-            placeholder="DEV"
+            placeholder="User"
             required
           />
         </div>
@@ -1883,7 +1864,7 @@
             id="password"
             type="password"
             autocomplete="current-password"
-            placeholder="password"
+            placeholder="Password"
             required
           />
         </div>
@@ -2017,7 +1998,7 @@
                 <input
                   id="projectSearch"
                   type="search"
-                  placeholder="Search clients, invoices..."
+                  placeholder="Search through projects, clients..."
                 />
               </label>
 
@@ -2288,268 +2269,7 @@
           .replace(/'/g, "&#039;");
       }
 
-      function defaultProjects() {
-        return [
-          {
-            id: "vegasflowers",
-            title: "VegasFlowers",
-            task: "Website Design",
-            customTask: "",
-            description: "Homepage refresh, booking flow, and mobile polish.",
-            status: "In Progress",
-            icon: "flower",
-            color: "purple",
-            copyBlocks: [],
-          },
-          {
-            id: "desert-detailing",
-            title: "Desert Detailing",
-            task: "Booking + Estimate Form",
-            customTask: "",
-            description: "Online service form, pricing flow, and lead capture.",
-            status: "Review",
-            icon: "car",
-            color: "blue",
-            copyBlocks: [],
-          },
-          {
-            id: "luna-aesthetics",
-            title: "Luna Aesthetics",
-            task: "Branding Package",
-            customTask: "",
-            description:
-              "Visual identity update, landing page, and intake form.",
-            status: "Drafting",
-            icon: "moon",
-            color: "purple",
-            copyBlocks: [],
-          },
-          {
-            id: "silver-state-realty",
-            title: "Silver State Realty",
-            task: "CRM Setup",
-            customTask: "",
-            description:
-              "Lead pipeline organization, automations, and follow-up system.",
-            status: "In Progress",
-            icon: "home",
-            color: "blue",
-            copyBlocks: [],
-          },
-          {
-            id: "neon-fit-studio",
-            title: "Neon Fit Studio",
-            task: "Membership Portal",
-            customTask: "",
-            description:
-              "Client dashboard, class schedule, and sign-up experience.",
-            status: "Pending",
-            icon: "dumbbell",
-            color: "purple",
-            copyBlocks: [],
-          },
-          {
-            id: "mojave-cleaners",
-            title: "Mojave Cleaners",
-            task: "Other",
-            customTask: "Invoices + Scheduling",
-            description:
-              "Recurring bookings, invoices, and confirmation workflow.",
-            status: "Active",
-            icon: "spray",
-            color: "green",
-            copyBlocks: [],
-          },
-        ];
-      }
-
-      function cleanProject(project, fallback) {
-        const cleaned = { ...fallback, ...project };
-        cleaned.id = cleaned.id || uid();
-        cleaned.title = cleaned.title || "Untitled Project";
-        cleaned.task = TASK_OPTIONS.includes(cleaned.task)
-          ? cleaned.task
-          : "Other";
-        cleaned.customTask = cleaned.customTask || "";
-        cleaned.description = cleaned.description || "";
-        cleaned.status = STATUS_OPTIONS.includes(cleaned.status)
-          ? cleaned.status
-          : "Pending";
-        cleaned.icon = ICON_OPTIONS.includes(normalizeIconValue(cleaned.icon))
-          ? normalizeIconValue(cleaned.icon)
-          : "solid:file-lines";
-        cleaned.color = COLOR_OPTIONS.some(
-          (color) => color.id === cleaned.color,
-        )
-          ? cleaned.color
-          : "blue";
-        cleaned.copyBlocks = Array.isArray(cleaned.copyBlocks)
-          ? cleaned.copyBlocks.map(cleanBlock)
-          : [];
-        cleaned.noteBlocks = Array.isArray(cleaned.noteBlocks)
-          ? cleaned.noteBlocks.map(cleanNoteBlock)
-          : [];
-        return cleaned;
-      }
-
-      function cleanBlock(block) {
-        const format = ["text", "code", "url"].includes(block.format)
-          ? block.format
-          : "text";
-
-        return {
-          id: block.id || uid(),
-          label: block.label || "Copy Block",
-          content: block.content || "",
-          visibleText: block.visibleText || "",
-          url: block.url || "",
-          format,
-          expanded: Boolean(block.expanded),
-          editing: Boolean(block.editing),
-          copied: false,
-        };
-      }
-
-      function cleanNoteBlock(block) {
-        const isLegacyChecklist = !block.type && Array.isArray(block.items);
-        const type =
-          block.type === "note" && !isLegacyChecklist ? "note" : "checklist";
-
-        return {
-          id: block.id || uid(),
-          type,
-          title: block.title || "Note Block",
-          content: block.content || "",
-          expanded: Boolean(block.expanded),
-          items:
-            Array.isArray(block.items) && block.items.length
-              ? block.items.map((item) => ({
-                  id: item.id || uid(),
-                  text: item.text || "",
-                  checked: Boolean(item.checked),
-                }))
-              : [{ id: uid(), text: "", checked: false }],
-        };
-      }
-
-      function loadProjects() {
-        const defaults = defaultProjects();
-
-        try {
-          const saved = JSON.parse(localStorage.getItem(PROJECT_STORAGE_KEY));
-          if (Array.isArray(saved)) {
-            const fallbackById = new Map(
-              defaults.map((project) => [project.id, project]),
-            );
-            return saved.map((project, index) =>
-              cleanProject(
-                project,
-                fallbackById.get(project.id) || defaults[index] || {},
-              ),
-            );
-          }
-        } catch (error) {
-          console.warn("Unable to load ClientFlow projects.", error);
-        }
-
-        return defaults;
-      }
-
-      function saveProjects() {
-        const storable = projects.map((project) => ({
-          ...project,
-          copyBlocks: project.copyBlocks.map(
-            ({ copied, editing, ...block }) => block,
-          ),
-        }));
-
-        localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(storable));
-        showSaveState();
-      }
-
-      function showSaveState() {
-        const state = document.getElementById("saveState");
-        if (!state) return;
-
-        state.textContent = "Saved";
-        window.clearTimeout(saveMessageTimer);
-        saveMessageTimer = window.setTimeout(() => {
-          const nextState = document.getElementById("saveState");
-          if (nextState) nextState.textContent = "";
-        }, 1400);
-      }
-
-      function taskLabel(project) {
-        return project.task === "Other"
-          ? project.customTask || "Other"
-          : project.task;
-      }
-
-      function dotHtml(status) {
-        const dotClass = STATUS_DOT_CLASS[status] || "";
-        return `<span class="dot ${dotClass}"></span>`;
-      }
-
-      function statusDotStyle(status) {
-        const dotClass = STATUS_DOT_CLASS[status] || "";
-        const colorMap = {
-          yellow: "var(--yellow)",
-          purple: "var(--purple)",
-          cyan: "#62c6d7",
-          green: "#66d48a",
-          danger: "var(--danger)",
-        };
-
-        return colorMap[dotClass] || "var(--blue)";
-      }
-
-      function colorValue(colorId) {
-        return (
-          COLOR_OPTIONS.find((color) => color.id === colorId)?.value ||
-          "var(--blue)"
-        );
-      }
-
-      function loadRecentIcons() {
-        try {
-          const parsed = JSON.parse(
-            localStorage.getItem(ICON_RECENTS_KEY) || "[]",
-          );
-          return Array.isArray(parsed)
-            ? parsed
-                .map(normalizeIconValue)
-                .filter((icon) => ICON_OPTIONS.includes(icon))
-                .slice(0, 12)
-            : [];
-        } catch {
-          return [];
-        }
-      }
-
-      function rememberIcon(icon) {
-        const selected = normalizeIconValue(icon);
-        localStorage.setItem(
-          ICON_RECENTS_KEY,
-          JSON.stringify(
-            [
-              selected,
-              ...loadRecentIcons().filter((item) => item !== selected),
-            ].slice(0, 12),
-          ),
-        );
-      }
-
-      function categoryIcons(categoryId) {
-        if (categoryId === "recents") {
-          const recents = loadRecentIcons();
-          const fill = ICON_OPTIONS.filter((icon) => !recents.includes(icon));
-          return [...recents, ...fill].slice(0, 12);
-        }
-
-        return (ICON_GROUPS[categoryId] || []).map((icon) => `solid:${icon}`);
-      }
-
-      function renderMenuControl({
+                                                                                          function renderMenuControl({
         label,
         field,
         value,
@@ -2589,458 +2309,7 @@
       `;
       }
 
-      function renderIconPicker(project) {
-        const iconsForCategory = categoryIcons(iconPickerCategory);
-        const pageSize = iconPickerCategory === "recents" ? 12 : ICON_PAGE_SIZE;
-        const pageCount = Math.max(
-          1,
-          Math.ceil(iconsForCategory.length / pageSize),
-        );
-        iconPickerPage = Math.min(iconPickerPage, pageCount - 1);
-        const visibleIcons = iconsForCategory.slice(
-          iconPickerPage * pageSize,
-          iconPickerPage * pageSize + pageSize,
-        );
-
-        return `
-        <div class="icon-picker">
-          <div class="icon-category-row" role="tablist" aria-label="Icon categories">
-            ${ICON_CATEGORIES.map(
-              (category) => `
-              <button class="icon-category ${category.id === iconPickerCategory ? "active" : ""}" type="button" data-command="icon-category" data-icon-category="${escapeHtml(category.id)}">
-                ${iconSvg(category.icon)}
-                <span>${escapeHtml(category.label)}</span>
-              </button>
-            `,
-            ).join("")}
-          </div>
-
-          <div class="icon-grid" role="group" aria-label="Project icon choices">
-            ${visibleIcons
-              .map(
-                (icon) => `
-              <button class="icon-choice ${icon === normalizeIconValue(project.icon) ? "active" : ""}" type="button" data-command="set-project-icon" data-icon-value="${escapeHtml(icon)}" aria-label="${escapeHtml(iconLabel(iconName(icon)))} icon">
-                ${iconSvg(icon)}
-              </button>
-            `,
-              )
-              .join("")}
-          </div>
-
-          ${
-            iconPickerCategory !== "recents" && pageCount > 1
-              ? `
-            <div class="icon-pager" aria-label="Icon pages">
-              <button class="icon-page-button" type="button" data-command="icon-page" data-icon-page="prev" ${iconPickerPage === 0 ? "disabled" : ""} aria-label="Previous icons"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
-              <span class="icon-page-label">
-                ${Array.from(
-                  { length: pageCount },
-                  (_, index) => `
-                  <button class="icon-page-number ${index === iconPickerPage ? "active" : ""}" type="button" data-command="icon-page-number" data-icon-page-number="${index}" aria-label="Icon page ${index + 1}">${index + 1}</button>
-                `,
-                ).join("")}
-              </span>
-              <button class="icon-page-button" type="button" data-command="icon-page" data-icon-page="next" ${iconPickerPage === pageCount - 1 ? "disabled" : ""} aria-label="Next icons"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
-            </div>
-          `
-              : ""
-          }
-        </div>
-      `;
-      }
-
-      function renderAppearanceControls(project) {
-        return `
-        <div class="control-stack wide">
-          <label>Project Icon + Color</label>
-          <div class="project-appearance-controls">
-            <button class="appearance-trigger ${activeAppearancePanel === "icon" ? "active" : ""}" type="button" data-command="toggle-appearance-panel" data-panel="icon" aria-label="Choose project icon">
-              ${iconSvg(project.icon)}
-            </button>
-            <button class="appearance-trigger color-trigger ${activeAppearancePanel === "color" ? "active" : ""}" type="button" data-command="toggle-appearance-panel" data-panel="color" style="--trigger-color:${colorValue(project.color)}" aria-label="Choose icon color"></button>
-          </div>
-        </div>
-      `;
-      }
-
-      function renderAppearancePopup(project) {
-        if (!activeAppearancePanel) return "";
-
-        const title =
-          activeAppearancePanel === "icon" ? "Project Icon" : "Icon Color";
-        const content =
-          activeAppearancePanel === "icon"
-            ? renderIconPicker(project)
-            : renderColorPicker(project);
-
-        return `
-        <div class="modal open appearance-modal" data-modal="appearance-picker">
-          <section class="sheet compact appearance-sheet" role="dialog" aria-modal="true" aria-labelledby="appearancePickerTitle">
-            <div class="sheet-head">
-              <h2 id="appearancePickerTitle">${title}</h2>
-              <button class="small-btn" type="button" data-command="close-appearance-popup">${iconSvg("xmark")} Close</button>
-            </div>
-            ${content}
-          </section>
-        </div>
-      `;
-      }
-
-      function renderColorPicker(project) {
-        return `
-        <div class="color-picker">
-          <div class="color-grid" role="group" aria-label="Icon colors">
-            ${COLOR_OPTIONS.map(
-              (color) => `
-              <button class="color-swatch ${project.color === color.id ? "active" : ""}" type="button" data-command="set-project-color" data-color-value="${escapeHtml(color.id)}" style="--swatch:${escapeHtml(color.value)}" aria-label="${escapeHtml(color.label)}"></button>
-            `,
-            ).join("")}
-          </div>
-        </div>
-      `;
-      }
-
-      function renderDashboardProjectCards() {
-        const query = projectSearch.value.trim().toLowerCase();
-        const visibleProjects = projects.filter((project) => {
-          const haystack =
-            `${project.title} ${taskLabel(project)} ${project.description} ${project.status}`.toLowerCase();
-          return haystack.includes(query);
-        });
-
-        projectGrid.innerHTML =
-          visibleProjects
-            .map((project) => {
-              const titleClass =
-                project.title.length > 28
-                  ? "very-long-title"
-                  : project.title.length > 18
-                    ? "long-title"
-                    : "";
-
-              return `
-        <article class="card ${expandedProjectCardId === project.id ? "expanded" : ""}" data-project-card="${escapeHtml(project.id)}" draggable="true">
-          <button class="card-toggle-btn" type="button" data-card-toggle="${escapeHtml(project.id)}" aria-label="${expandedProjectCardId === project.id ? "Collapse project card" : "Expand project card"}">${expandedProjectCardId === project.id ? "−" : "+"}</button>
-          ${dashboardEditing ? `<button class="small-btn danger card-delete-btn" type="button" data-delete-project="${escapeHtml(project.id)}" aria-label="Delete project">${iconSvg("trash")}</button>` : ""}
-          <div class="card-summary">
-            <div class="icon-box ${escapeHtml(project.color)}">${iconSvg(project.icon)}</div>
-            <div class="card-title-stack">
-              <h2 class="${titleClass}">${escapeHtml(project.title)}</h2>
-              <div class="type">${escapeHtml(taskLabel(project))}</div>
-            </div>
-          </div>
-          <div class="card-divider"></div>
-          <p class="desc ${project.description.length > 92 ? "overflowing" : ""}">${escapeHtml(project.description)}</p>
-          <div class="status">
-  ${dotHtml(project.status)}
-  ${escapeHtml(project.status)}
-</div>
-          ${expandedProjectCardId === project.id ? `<button class="open-btn" type="button" data-open-project="${escapeHtml(project.id)}">Open Project</button>` : ""}
-        </article>
-      `;
-            })
-            .join("") +
-          `
-        <button class="add-project-card" type="button" data-command="add-project" aria-label="Add project">
-          <span class="add-project-plus">${iconSvg("plus")}</span>
-        </button>
-      `;
-
-        dashboardEditBtn.textContent = dashboardEditing
-          ? "Done Editing"
-          : "Edit Projects";
-      }
-
-      function findProject(projectId) {
-        return projects.find((project) => project.id === projectId);
-      }
-
-      function openProject(projectId) {
-        activeProjectId = projectId;
-        projectInfoOpen = false;
-        expandedNoteId = null;
-        activeCustomMenu = "";
-        dashboardView.classList.remove("active");
-        projectView.classList.add("active");
-        renderProjectDetails();
-        projectView.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-
-      function backToDashboard() {
-        activeProjectId = null;
-        expandedNoteId = null;
-        projectInfoOpen = false;
-        activeCustomMenu = "";
-        projectView.classList.remove("active");
-        dashboardView.classList.add("active");
-        renderDashboardProjectCards();
-        dashboardView.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-
-      function addProject() {
-        const project = cleanProject(
-          {
-            id: uid(),
-            title: "New Project",
-            task: "Other",
-            customTask: "",
-            description: "",
-            status: "Pending",
-            icon: "file",
-            color: "white",
-            copyBlocks: [],
-            noteBlocks: [],
-          },
-          {},
-        );
-
-        projects.push(project);
-        saveProjects();
-        renderDashboardProjectCards();
-        openProject(project.id);
-      }
-
-      function deleteProject(projectId) {
-        const index = projects.findIndex((project) => project.id === projectId);
-        if (index < 0) return;
-
-        projects.splice(index, 1);
-        saveProjects();
-
-        if (activeProjectId === projectId) {
-          projectInfoOpen = false;
-          expandedNoteId = null;
-          backToDashboard();
-          return;
-        }
-
-        renderDashboardProjectCards();
-      }
-
-      function moveProject(sourceId, targetId, afterTarget = false) {
-        if (!sourceId || !targetId || sourceId === targetId) return;
-
-        const sourceIndex = projects.findIndex(
-          (project) => project.id === sourceId,
-        );
-        const targetIndex = projects.findIndex(
-          (project) => project.id === targetId,
-        );
-        if (sourceIndex < 0 || targetIndex < 0) return;
-
-        const [source] = projects.splice(sourceIndex, 1);
-        const adjustedTargetIndex = projects.findIndex(
-          (project) => project.id === targetId,
-        );
-        projects.splice(
-          afterTarget ? adjustedTargetIndex + 1 : adjustedTargetIndex,
-          0,
-          source,
-        );
-        saveProjects();
-        renderDashboardProjectCards();
-      }
-
-      function renderProjectDetails() {
-        const project = findProject(activeProjectId);
-        if (!project) {
-          backToDashboard();
-          return;
-        }
-
-        projectView.innerHTML = `
-        <div class="project-page">
-          <div class="project-top">
-            <div class="project-heading">
-              <div class="icon-box icon-preview" style="color:${colorValue(project.color)}">${iconSvg(project.icon)}</div>
-              <div>
-                <input class="project-title-input" type="text" value="${escapeHtml(project.title)}" data-project-field="title" aria-label="Project title" />
-                <div class="project-status-line">
-                  ${dotHtml(project.status)}
-                  <span>${escapeHtml(project.status)}</span>
-                  <span class="save-state" id="saveState"></span>
-                </div>
-              </div>
-            </div>
-            <div class="project-actions">
-  <button class="back-btn checklist-top-btn" type="button" data-command="toggle-top-checklist" aria-label="Add checklist item">${iconSvg("list-check")}</button>
-  <button class="back-btn" type="button" data-command="open-project-info">${iconSvg("edit")} Edit</button>
-  <button class="back-btn" type="button" data-command="back-to-dashboard">${iconSvg("arrow")} Back</button>
-</div>
-          </div>
-          ${renderTopChecklist(project)}
-
-          <section class="project-panel copy-section">
-            <div class="copy-section-head">
-              <h2>Copy Blocks</h2>
-              <div class="copy-block-actions">
-  ${project.copyBlocks.length ? `<button class="small-btn" type="button" data-command="toggle-copy-edit-mode">${copyBlocksEditing ? "Done" : "Sort"}</button>` : ""}
-  <button class="small-btn" type="button" data-command="open-copy-block-popup">Add</button>
-</div>
-            </div>
-
-            <div class="copy-block-grid" id="copyBlocks">
-            
-              ${renderCopyBlocks(project)}
-            </div>
-          </section>
-
-          ${projectInfoOpen ? renderProjectInfoModal(project) : ""}
-${projectInfoOpen ? renderAppearancePopup(project) : ""}
-${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
-
-        </div>
-      `;
-      }
-      function renderTopChecklist(project) {
-        const checklistBlocks = project.noteBlocks.filter(
-          (block) => block.type === "checklist",
-        );
-        if (!checklistBlocks.length) return "";
-
-        return `
-    <section class="top-checklist-wrap">
-      ${checklistBlocks
-        .map(
-          (block) => `
-        <article class="top-checklist" data-note-id="${escapeHtml(block.id)}" data-note-kind="checklist">
-          <div class="check-list">
-            ${block.items
-              .map(
-                (item) => `
-              <div class="check-row ${item.checked ? "checked" : ""}" data-check-id="${escapeHtml(item.id)}">
-                <button class="check-toggle ${item.checked ? "checked" : ""}" type="button" data-command="toggle-check-item" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" aria-label="Toggle checkbox">
-                  ${item.checked ? iconSvg("check") : ""}
-                </button>
-
-                <textarea class="check-input wrap" rows="1" data-check-field="text" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" placeholder="Checklist item">${escapeHtml(item.text)}</textarea>
-
-                <button class="small-btn danger block-icon-button" type="button" data-command="delete-check-item" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" aria-label="Delete checkbox">${iconSvg("trash")}</button>
-              </div>
-            `,
-              )
-              .join("")}
-          </div>
-        </article>
-      `,
-        )
-        .join("")}
-    </section>
-  `;
-      }
-      function toggleTopChecklist() {
-        const project = findProject(activeProjectId);
-        if (!project) return;
-
-        const existingChecklist = project.noteBlocks.find(
-          (block) => block.type === "checklist",
-        );
-
-        if (existingChecklist) {
-          const firstEmpty = existingChecklist.items.find(
-            (item) => !item.text.trim(),
-          );
-
-          if (!firstEmpty) {
-            existingChecklist.items.push({
-              id: uid(),
-              text: "",
-              checked: false,
-            });
-          }
-
-          saveProjects();
-          renderProjectDetails();
-
-          window.requestAnimationFrame(() => {
-            const itemToFocus =
-              existingChecklist.items.find((item) => !item.text.trim()) ||
-              existingChecklist.items[existingChecklist.items.length - 1];
-            document
-              .querySelector(
-                `[data-check-id="${itemToFocus.id}"][data-check-field="text"]`,
-              )
-              ?.focus();
-          });
-
-          return;
-        }
-
-        const newItem = { id: uid(), text: "", checked: false };
-
-        project.noteBlocks.unshift({
-          id: uid(),
-          type: "checklist",
-          title: "Checklist",
-          content: "",
-          expanded: false,
-          items: [newItem],
-        });
-
-        saveProjects();
-        renderProjectDetails();
-
-        window.requestAnimationFrame(() => {
-          document
-            .querySelector(
-              `[data-check-id="${newItem.id}"][data-check-field="text"]`,
-            )
-            ?.focus();
-        });
-      }
-      function renderAddCopyBlockModal() {
-        return `
-    <div class="modal open" data-modal="add-copy-block">
-      <section class="sheet compact" role="dialog" aria-modal="true" aria-labelledby="addCopyBlockTitle">
-        <div class="sheet-head">
-          <h2 id="addCopyBlockTitle">Add Copy Block</h2>
-          <button class="small-btn" type="button" data-command="close-copy-block-popup">${iconSvg("xmark")} Close</button>
-        </div>
-
-        <div class="copy-edit-grid">
-          <div class="control-stack">
-            <label>Block Type</label>
-            <div class="format-row">
-              <button class="format-choice ${copyBlockDraft.format === "text" ? "active" : ""}" type="button" data-command="set-copy-draft-format" data-format="text">Text</button>
-              <button class="format-choice ${copyBlockDraft.format === "code" ? "active" : ""}" type="button" data-command="set-copy-draft-format" data-format="code">Code</button>
-              <button class="format-choice ${copyBlockDraft.format === "url" ? "active" : ""}" type="button" data-command="set-copy-draft-format" data-format="url">URL</button>
-            </div>
-          </div>
-
-          ${
-            copyBlockDraft.format === "url"
-              ? `
-            <div class="field">
-              <label>Visible Text</label>
-              <input type="text" value="${escapeHtml(copyBlockDraft.visibleText)}" data-copy-draft-field="visibleText" placeholder="Example: View website" />
-            </div>
-
-            <div class="field">
-              <label>URL Link</label>
-              <input type="url" value="${escapeHtml(copyBlockDraft.url)}" data-copy-draft-field="url" placeholder="https://example.com" />
-            </div>
-          `
-              : `
-            <div class="field">
-              <label>Block Label</label>
-              <input type="text" value="${escapeHtml(copyBlockDraft.label)}" data-copy-draft-field="label" placeholder="${copyBlockDraft.format === "code" ? "Example: Header Code" : "Example: Client Message"}" />
-            </div>
-
-            <div class="field">
-              <label>${copyBlockDraft.format === "code" ? "Code" : "Text"}</label>
-              <textarea data-copy-draft-field="content" placeholder="${copyBlockDraft.format === "code" ? "Paste code here" : "Write text here"}">${escapeHtml(copyBlockDraft.content)}</textarea>
-            </div>
-          `
-          }
-
-          <button class="add-block-btn" type="button" data-command="create-copy-block-from-popup">Create Block</button>
-        </div>
-      </section>
-    </div>
-  `;
-      }
-
-      function iconLabel(name) {
+                                                                                                function iconLabel(name) {
         return name
           .split("-")
           .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
@@ -3636,7 +2905,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
             </div>
 
             <div class="copy-block-grid" id="copyBlocks">
-            
+
               ${renderCopyBlocks(project)}
             </div>
           </section>
@@ -3670,7 +2939,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
                   ${item.checked ? iconSvg("check") : ""}
                 </button>
 
-                <textarea class="check-input wrap" rows="1" data-check-field="text" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" placeholder="Checklist item">${escapeHtml(item.text)}</textarea>
+                <textarea class="check-input wrap" rows="1" data-check-field="text" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" placeholder="Type here, bestie…">${escapeHtml(item.text)}</textarea>
 
                 <button class="small-btn danger block-icon-button" type="button" data-command="delete-check-item" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" aria-label="Delete checkbox">${iconSvg("trash")}</button>
               </div>
@@ -3710,23 +2979,23 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
               ? `
             <div class="field">
               <label>Visible Text</label>
-              <input type="text" value="${escapeHtml(copyBlockDraft.visibleText)}" data-copy-draft-field="visibleText" placeholder="Example: View website" />
+              <input type="text" value="${escapeHtml(copyBlockDraft.visibleText)}" data-copy-draft-field="visibleText" placeholder="Type here..." />
             </div>
 
             <div class="field">
               <label>URL Link</label>
-              <input type="url" value="${escapeHtml(copyBlockDraft.url)}" data-copy-draft-field="url" placeholder="https://example.com" />
+              <input type="url" value="${escapeHtml(copyBlockDraft.url)}" data-copy-draft-field="url" placeholder="For your eyes only :>" />
             </div>
           `
               : `
             <div class="field">
               <label>Block Label</label>
-              <input type="text" value="${escapeHtml(copyBlockDraft.label)}" data-copy-draft-field="label" placeholder="${copyBlockDraft.format === "code" ? "Example: Header Code" : "Example: Client Message"}" />
+              <input type="text" value="${escapeHtml(copyBlockDraft.label)}" data-copy-draft-field="label" placeholder="${copyBlockDraft.format === "code" ? "Just put something here." : "What do you wanna call this boss?"}" />
             </div>
 
             <div class="field">
               <label>${copyBlockDraft.format === "code" ? "Code" : "Text"}</label>
-              <textarea data-copy-draft-field="content" placeholder="${copyBlockDraft.format === "code" ? "Paste code here" : "Write text here"}">${escapeHtml(copyBlockDraft.content)}</textarea>
+              <textarea data-copy-draft-field="content" placeholder="${copyBlockDraft.format === "code" ? "Put yet code here." : "Feed the rectangle."}">${escapeHtml(copyBlockDraft.content)}</textarea>
             </div>
           `
           }
@@ -4945,6 +4214,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
       }
 
       bootApp();
-    </script>
+</script>
   </body>
 </html>
