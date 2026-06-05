@@ -431,7 +431,7 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
       gap: 18px;
     }
 
@@ -444,9 +444,9 @@
     }
 
     .card {
-      aspect-ratio: 1;
-      min-height: 0;
-      padding: 20px;
+      min-height: 184px;
+      height: 184px;
+      padding: 18px 20px;
       border-radius: var(--radius);
       border: 1px solid var(--border);
       background:
@@ -460,14 +460,27 @@
       cursor: pointer;
     }
 
+    .card.dragging {
+      opacity: 0.58;
+      transform: scale(0.99);
+    }
+
+    .card.drop-before {
+      box-shadow: -4px 0 0 var(--blue), var(--shadow);
+    }
+
+    .card.drop-after {
+      box-shadow: 4px 0 0 var(--blue), var(--shadow);
+    }
+
     .card:hover {
       transform: translateY(-3px);
       border-color: rgba(107, 145, 255, 0.35);
     }
 
     .icon-box {
-      width: 58px;
-      height: 58px;
+      width: 64px;
+      height: 64px;
       border-radius: 10px;
       display: grid;
       place-items: center;
@@ -477,14 +490,25 @@
     }
 
     .icon-box svg {
-      width: 31px;
-      height: 31px;
+      width: 34px;
+      height: 34px;
     }
 
     .card h2 {
-      margin: 0 0 8px;
-      font-size: 21px;
+      margin: 0;
+      font-size: clamp(18px, 2.1vw, 25px);
       letter-spacing: -0.04em;
+      line-height: 1.12;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .card h2.long-title {
+      font-size: clamp(16px, 1.8vw, 21px);
+    }
+
+    .card h2.very-long-title {
+      font-size: clamp(14px, 1.55vw, 18px);
     }
 
     .type {
@@ -492,6 +516,7 @@
       font-size: 15px;
       font-weight: 500;
       margin-bottom: 12px;
+      text-align: center;
     }
 
     .desc {
@@ -512,10 +537,96 @@
       padding-top: 14px;
     }
 
+    .card-summary {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      align-items: center;
+      gap: 16px;
+      min-height: 82px;
+    }
+
+    .card-summary .icon-box {
+      margin: 0;
+    }
+
+    .card-title-stack {
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .card-divider {
+      height: 1px;
+      margin: 12px 0 0;
+      background: rgba(126, 151, 190, 0.12);
+    }
+
+    .card-toggle-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(138, 159, 255, 0.18);
+      border-radius: 9px;
+      background: rgba(19, 34, 58, 0.74);
+      color: white;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .card {
+      position: relative;
+    }
+
     .card.expanded .desc {
       display: block;
-      max-height: 72px;
+      max-height: 112px;
       overflow: hidden;
+    }
+
+    .card.expanded {
+      height: 382px;
+      min-height: 382px;
+      padding: 27px;
+    }
+
+    .card.expanded .card-summary {
+      display: block;
+      min-height: 0;
+    }
+
+    .card.expanded .card-title-stack {
+      display: block;
+      justify-items: start;
+    }
+
+    .card.expanded .card-summary .icon-box {
+      width: 70px;
+      height: 70px;
+      margin-bottom: 26px;
+    }
+
+    .card.expanded .card-summary .icon-box svg {
+      width: 38px;
+      height: 38px;
+    }
+
+    .card.expanded h2 {
+      margin: 0 0 8px;
+      font-size: 27px;
+      text-align: left;
+    }
+
+    .card.expanded .type {
+      text-align: left;
+      font-size: 18px;
+      margin-bottom: 17px;
+    }
+
+    .card.expanded .card-divider {
+      display: none;
     }
 
     .card.expanded .desc.overflowing {
@@ -557,7 +668,7 @@
     }
 
     .add-project-card {
-      aspect-ratio: 1;
+      height: 184px;
       min-height: 0;
       border-radius: var(--radius);
       border: 1px dashed rgba(255, 255, 255, 0.3);
@@ -1786,6 +1897,7 @@
     let dashboardEditing = false;
     let expandedNoteId = null;
     let expandedProjectCardId = "";
+    let draggedProjectId = "";
     let copyBlocksEditing = false;
     let activeNoteCopyId = "";
     let draggedNoteId = "";
@@ -2109,12 +2221,21 @@
         return haystack.includes(query);
       });
 
-      projectGrid.innerHTML = visibleProjects.map((project) => `
-        <article class="card ${expandedProjectCardId === project.id ? "expanded" : ""}" data-project-card="${escapeHtml(project.id)}">
+      projectGrid.innerHTML = visibleProjects.map((project) => {
+        const titleClass = project.title.length > 28 ? "very-long-title" : project.title.length > 18 ? "long-title" : "";
+
+        return `
+        <article class="card ${expandedProjectCardId === project.id ? "expanded" : ""}" data-project-card="${escapeHtml(project.id)}" draggable="true">
+          <button class="card-toggle-btn" type="button" data-card-toggle="${escapeHtml(project.id)}" aria-label="${expandedProjectCardId === project.id ? "Collapse project card" : "Expand project card"}">${expandedProjectCardId === project.id ? "−" : "+"}</button>
           ${dashboardEditing ? `<button class="small-btn danger card-delete-btn" type="button" data-delete-project="${escapeHtml(project.id)}" aria-label="Delete project">${iconSvg("trash")}</button>` : ""}
-          <div class="icon-box ${escapeHtml(project.color)}">${iconSvg(project.icon)}</div>
-          <h2>${escapeHtml(project.title)}</h2>
-          <div class="type">${escapeHtml(taskLabel(project))}</div>
+          <div class="card-summary">
+            <div class="icon-box ${escapeHtml(project.color)}">${iconSvg(project.icon)}</div>
+            <div class="card-title-stack">
+              <h2 class="${titleClass}">${escapeHtml(project.title)}</h2>
+              <div class="type">${escapeHtml(taskLabel(project))}</div>
+            </div>
+          </div>
+          <div class="card-divider"></div>
           <p class="desc ${project.description.length > 92 ? "overflowing" : ""}">${escapeHtml(project.description)}</p>
           <div class="status">
             ${dotHtml(project.status)}
@@ -2122,7 +2243,8 @@
           </div>
           ${expandedProjectCardId === project.id ? `<button class="open-btn" type="button" data-open-project="${escapeHtml(project.id)}">Open Project</button>` : ""}
         </article>
-      `).join("") + `
+      `;
+      }).join("") + `
         <button class="add-project-card" type="button" data-command="add-project" aria-label="Add project">
           <span class="add-project-plus">${iconSvg("plus")}</span>
         </button>
@@ -2191,6 +2313,20 @@
         return;
       }
 
+      renderDashboardProjectCards();
+    }
+
+    function moveProject(sourceId, targetId, afterTarget = false) {
+      if (!sourceId || !targetId || sourceId === targetId) return;
+
+      const sourceIndex = projects.findIndex((project) => project.id === sourceId);
+      const targetIndex = projects.findIndex((project) => project.id === targetId);
+      if (sourceIndex < 0 || targetIndex < 0) return;
+
+      const [source] = projects.splice(sourceIndex, 1);
+      const adjustedTargetIndex = projects.findIndex((project) => project.id === targetId);
+      projects.splice(afterTarget ? adjustedTargetIndex + 1 : adjustedTargetIndex, 0, source);
+      saveProjects();
       renderDashboardProjectCards();
     }
 
@@ -2749,6 +2885,7 @@
       const addButton = event.target.closest("[data-command='add-project']");
       const deleteButton = event.target.closest("[data-delete-project]");
       const button = event.target.closest("[data-open-project]");
+      const toggleButton = event.target.closest("[data-card-toggle]");
       const card = event.target.closest("[data-project-card]");
 
       if (addButton) {
@@ -2766,10 +2903,55 @@
         return;
       }
 
-      if (card) {
-        expandedProjectCardId = expandedProjectCardId === card.dataset.projectCard ? "" : card.dataset.projectCard;
+      if (toggleButton || card) {
+        const projectId = toggleButton?.dataset.cardToggle || card.dataset.projectCard;
+        expandedProjectCardId = expandedProjectCardId === projectId ? "" : projectId;
         renderDashboardProjectCards();
       }
+    });
+
+    projectGrid.addEventListener("dragstart", (event) => {
+      const card = event.target.closest("[data-project-card]");
+      if (!card) return;
+
+      draggedProjectId = card.dataset.projectCard;
+      card.classList.add("dragging");
+      event.dataTransfer.effectAllowed = "move";
+    });
+
+    projectGrid.addEventListener("dragover", (event) => {
+      const card = event.target.closest("[data-project-card]");
+      if (!card || !draggedProjectId || card.dataset.projectCard === draggedProjectId) return;
+
+      event.preventDefault();
+      const rect = card.getBoundingClientRect();
+      const after = event.clientX > rect.left + rect.width / 2;
+      card.classList.toggle("drop-before", !after);
+      card.classList.toggle("drop-after", after);
+    });
+
+    projectGrid.addEventListener("dragleave", (event) => {
+      const card = event.target.closest("[data-project-card]");
+      if (!card) return;
+
+      card.classList.remove("drop-before", "drop-after");
+    });
+
+    projectGrid.addEventListener("drop", (event) => {
+      const card = event.target.closest("[data-project-card]");
+      if (!card || !draggedProjectId) return;
+
+      event.preventDefault();
+      const after = card.classList.contains("drop-after");
+      moveProject(draggedProjectId, card.dataset.projectCard, after);
+      draggedProjectId = "";
+    });
+
+    projectGrid.addEventListener("dragend", () => {
+      draggedProjectId = "";
+      projectGrid.querySelectorAll(".dragging, .drop-before, .drop-after").forEach((element) => {
+        element.classList.remove("dragging", "drop-before", "drop-after");
+      });
     });
 
     projectView.addEventListener("input", (event) => {
