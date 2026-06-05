@@ -34,6 +34,10 @@
       box-sizing: border-box;
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -105,9 +109,10 @@
       font-weight: 600;
     }
 
-    .field input {
+    .field input,
+    .field select,
+    .field textarea {
       width: 100%;
-      height: 52px;
       border: 1px solid var(--border);
       border-radius: 9px;
       background: rgba(5, 15, 28, 0.95);
@@ -117,7 +122,21 @@
       outline: none;
     }
 
-    .field input:focus {
+    .field input,
+    .field select {
+      height: 52px;
+    }
+
+    .field textarea {
+      min-height: 132px;
+      padding: 14px 15px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
       border-color: rgba(107, 145, 255, 0.65);
       box-shadow: 0 0 0 3px rgba(107, 145, 255, 0.12);
     }
@@ -416,6 +435,14 @@
       gap: 22px;
     }
 
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
     .card {
       min-height: 382px;
       padding: 27px;
@@ -492,6 +519,7 @@
     .dot.purple { background: var(--purple); }
     .dot.cyan { background: #62c6d7; }
     .dot.green { background: #66d48a; }
+    .dot.danger { background: var(--danger); }
 
     .open-btn {
       margin-top: 28px;
@@ -511,10 +539,716 @@
       background: linear-gradient(180deg, #40519a, #304182);
     }
 
+    .add-project-card {
+      min-height: 382px;
+      border-radius: var(--radius);
+      border: 1px dashed rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: rgba(255, 255, 255, 0.82);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .add-project-card:hover {
+      border-color: rgba(107, 145, 255, 0.48);
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-3px);
+    }
+
+    .add-project-plus {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px dashed rgba(255, 255, 255, 0.38);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .add-project-plus svg {
+      width: 34px;
+      height: 34px;
+    }
+
+    .card-delete-btn {
+      align-self: flex-end;
+      width: 42px;
+      height: 42px;
+      margin: -8px -8px 8px 0;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+    }
+
+    .project-page {
+      display: grid;
+      gap: 22px;
+    }
+
+    .project-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 22px;
+      margin-bottom: 8px;
+    }
+
+    .project-heading {
+      min-width: 0;
+      display: flex;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .project-heading .icon-box {
+      margin: 0;
+      flex: 0 0 auto;
+    }
+
+    .project-title-input {
+      width: min(620px, 100%);
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      padding: 0;
+    }
+
+    .project-title-input:focus {
+      color: white;
+      text-shadow: 0 0 26px rgba(107, 145, 255, 0.26);
+    }
+
+    .back-btn,
+    .small-btn,
+    .add-block-btn,
+    .control-btn,
+    .picker-option,
+    .icon-category,
+    .icon-choice,
+    .color-swatch,
+    .icon-page-button,
+    .icon-page-number,
+    .format-choice,
+    .check-toggle {
+      border: 1px solid rgba(138, 159, 255, 0.18);
+      border-radius: 7px;
+      color: white;
+      font: inherit;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .back-btn,
+    .small-btn,
+    .add-block-btn {
+      background: linear-gradient(180deg, #344383, #26366f);
+    }
+
+    .back-btn {
+      min-width: 132px;
+      height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+    }
+
+    .small-btn {
+      min-height: 38px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add-block-btn {
+      height: 48px;
+      padding: 0 18px;
+      font-weight: 600;
+      justify-self: start;
+    }
+
+    .back-btn:hover,
+    .small-btn:hover,
+    .add-block-btn:hover,
+    .control-btn:hover,
+    .picker-option:hover,
+    .icon-category:hover,
+    .icon-choice:hover,
+    .icon-page-button:hover,
+    .icon-page-number:hover,
+    .format-choice:hover {
+      background: linear-gradient(180deg, #40519a, #304182);
+    }
+
+    .back-btn svg,
+    .small-btn svg,
+    .add-block-btn svg,
+    .copy-button svg,
+    .control-btn svg,
+    .picker-option svg,
+    .icon-choice svg,
+    .check-toggle svg {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .small-btn.danger {
+      border-color: rgba(255, 61, 85, 0.25);
+      background: rgba(255, 61, 85, 0.08);
+      color: #ff9aa6;
+    }
+
+    .small-btn.danger:hover {
+      background: rgba(255, 61, 85, 0.14);
+    }
+
+    .project-status-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      color: #c8d0df;
+      font-size: 15px;
+    }
+
+    .project-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .project-panel {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(145deg, rgba(18, 31, 55, 0.92), rgba(7, 17, 32, 0.94)),
+        var(--panel);
+      box-shadow: var(--shadow);
+      padding: 26px;
+    }
+
+    .project-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .project-form-grid .wide {
+      grid-column: 1 / -1;
+    }
+
+    .inline-editor {
+      display: grid;
+      grid-template-columns: minmax(160px, 260px) minmax(160px, 260px) 70px;
+      gap: 16px;
+      align-items: end;
+    }
+
+    .icon-preview {
+      width: 70px;
+      height: 70px;
+      margin: 0;
+    }
+
+    .copy-section {
+      display: grid;
+      gap: 16px;
+    }
+
+    .copy-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .copy-section h2,
+    .project-panel h2 {
+      margin: 0 0 18px;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .copy-section h2 {
+      margin: 0;
+    }
+
+    .add-menu-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .add-menu-wrap .custom-menu {
+      min-width: 210px;
+      left: auto;
+      right: 0;
+      top: calc(100% + 8px);
+    }
+
+    .copy-block {
+      min-height: 246px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(9, 20, 37, 0.72);
+      padding: 18px;
+      display: grid;
+      grid-template-rows: auto minmax(92px, 1fr) auto;
+      gap: 14px;
+    }
+
+    .copy-block-top,
+    .copy-block-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .copy-block-title {
+      min-width: 0;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .copy-button {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(138, 159, 255, 0.18);
+      border-radius: 9px;
+      background: rgba(19, 34, 58, 0.7);
+      color: white;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: 0.2s ease;
+      flex: 0 0 auto;
+    }
+
+    .block-icon-button {
+      width: 42px;
+      height: 42px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+    }
+
+    .copy-button:hover {
+      background: rgba(40, 61, 98, 0.75);
+      transform: translateY(-1px);
+    }
+
+    .copy-confirm {
+      min-width: 66px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .copy-preview {
+      min-height: 92px;
+      max-height: 92px;
+      color: var(--muted);
+      line-height: 1.55;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .copy-preview.collapsed {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .copy-preview.expanded {
+      max-height: none;
+      overflow: visible;
+    }
+
+    .copy-preview.code {
+      padding: 15px;
+      border: 1px solid rgba(126, 151, 190, 0.18);
+      border-radius: 9px;
+      background: rgba(5, 15, 28, 0.95);
+      color: #dce5ff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+    }
+
+    .copy-edit-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .copy-edit-row {
+      display: grid;
+      grid-template-columns: 1fr 160px;
+      gap: 14px;
+    }
+
+    .format-row {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .format-choice {
+      min-height: 42px;
+      padding: 0 14px;
+      background: rgba(19, 34, 58, 0.7);
+    }
+
+    .format-choice.active {
+      border-color: rgba(107, 145, 255, 0.52);
+      background: linear-gradient(180deg, #344383, #26366f);
+    }
+
+    .notes-grid,
+    .copy-block-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .note-block {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(9, 20, 37, 0.72);
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .note-preview {
+      min-height: 78px;
+      max-height: 118px;
+      color: var(--muted);
+      line-height: 1.55;
+      white-space: pre-wrap;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      cursor: pointer;
+    }
+
+    .note-preview.expanded {
+      max-height: none;
+    }
+
+    .note-popup-field {
+      width: 100%;
+      min-height: min(56vh, 560px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(5, 15, 28, 0.95);
+      color: var(--text);
+      font: inherit;
+      line-height: 1.55;
+      padding: 16px;
+      resize: vertical;
+      outline: none;
+    }
+
+    .note-title-row,
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .note-title-row {
+      justify-content: space-between;
+    }
+
+    .check-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .check-toggle {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border-radius: 9px;
+      background: rgba(19, 34, 58, 0.7);
+      flex: 0 0 auto;
+    }
+
+    .check-toggle.checked {
+      background: linear-gradient(180deg, #344383, #26366f);
+      border-color: rgba(107, 145, 255, 0.52);
+    }
+
+    .check-input {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: rgba(5, 15, 28, 0.95);
+      color: var(--text);
+      font: inherit;
+      padding: 0 12px;
+      outline: none;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      place-items: center;
+      padding: 22px;
+      background: rgba(2, 8, 18, 0.72);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .sheet {
+      width: min(760px, 100%);
+      max-height: min(780px, calc(100vh - 44px));
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background:
+        linear-gradient(145deg, rgba(18, 31, 55, 0.97), rgba(7, 17, 32, 0.98)),
+        var(--panel);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .sheet.compact {
+      width: min(520px, 100%);
+    }
+
+    .sheet.expanded-note {
+      width: min(1040px, 100%);
+      min-height: min(760px, calc(100vh - 44px));
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sheet.expanded-note .note-popup-body {
+      display: grid;
+      gap: 14px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .sheet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .sheet-head h2 {
+      margin: 0;
+      font-size: 23px;
+      letter-spacing: -0.03em;
+    }
+
+    .control-stack {
+      display: grid;
+      gap: 9px;
+      position: relative;
+    }
+
+    .control-stack > label {
+      color: #d9e0ef;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .control-btn {
+      width: 100%;
+      min-height: 52px;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      background: rgba(5, 15, 28, 0.95);
+      border-color: var(--border);
+      border-radius: 9px;
+    }
+
+    .control-value {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .custom-menu {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 8px);
+      z-index: 40;
+      display: none;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(5, 15, 28, 0.98);
+      box-shadow: var(--shadow);
+    }
+
+    .custom-menu.open {
+      display: grid;
+    }
+
+    .picker-option {
+      min-height: 46px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      background: rgba(19, 34, 58, 0.7);
+      border-color: rgba(126, 151, 190, 0.18);
+    }
+
+    .picker-option.active {
+      border-color: rgba(107, 145, 255, 0.52);
+      background: linear-gradient(90deg, rgba(55, 91, 170, 0.55), rgba(44, 57, 105, 0.35));
+    }
+
+    .status-dot-option {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      background: var(--blue);
+    }
+
+    .icon-picker,
+    .color-picker {
+      display: grid;
+      gap: 10px;
+    }
+
+    .icon-category-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .icon-category {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0 8px;
+      background: rgba(19, 34, 58, 0.7);
+      border-color: rgba(126, 151, 190, 0.18);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .icon-category.active,
+    .icon-choice.active,
+    .icon-page-number.active {
+      border-color: rgba(107, 145, 255, 0.52);
+      background: linear-gradient(180deg, #344383, #26366f);
+    }
+
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(40px, 1fr));
+      gap: 8px;
+    }
+
+    .icon-choice {
+      aspect-ratio: 1;
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      background: rgba(19, 34, 58, 0.7);
+      border-color: rgba(126, 151, 190, 0.18);
+      border-radius: 12px;
+    }
+
+    .icon-pager {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .icon-page-button,
+    .icon-page-number {
+      min-width: 36px;
+      height: 34px;
+      background: rgba(19, 34, 58, 0.7);
+      border-color: rgba(126, 151, 190, 0.18);
+    }
+
+    .icon-page-button:disabled {
+      opacity: 0.42;
+      cursor: default;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(30px, 1fr));
+      gap: 9px;
+    }
+
+    .color-swatch {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      min-height: 38px;
+      background: var(--swatch);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.14), 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .color-swatch.active {
+      box-shadow: inset 0 0 0 3px #fff, 0 0 0 2px rgba(107, 145, 255, 0.42), 0 10px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    .empty-blocks {
+      color: var(--muted);
+      border: 1px dashed rgba(126, 151, 190, 0.25);
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+    }
+
     .blue { color: var(--blue); }
     .purple { color: var(--purple); }
     .green { color: var(--green); }
     .yellow { color: var(--yellow); }
+    .cyan { color: #62c6d7; }
+    .pink { color: #ff74ba; }
+    .orange { color: #ff9a52; }
+    .red { color: var(--danger); }
+    .white { color: #ffffff; }
 
     @media (max-width: 1180px) {
       .app {
@@ -548,6 +1282,50 @@
       .topbar {
         align-items: flex-start;
         flex-direction: column;
+      }
+
+      .project-top,
+      .copy-section-head,
+      .copy-block-top,
+      .copy-block-actions,
+      .note-title-row {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .project-actions {
+        width: 100%;
+      }
+
+      .project-actions .back-btn {
+        flex: 1;
+      }
+
+      .project-heading {
+        align-items: flex-start;
+      }
+
+      .project-title-input {
+        font-size: 29px;
+      }
+
+      .project-form-grid,
+      .inline-editor,
+      .copy-edit-row,
+      .icon-category-row {
+        grid-template-columns: 1fr;
+      }
+
+      .icon-grid {
+        grid-template-columns: repeat(4, minmax(46px, 1fr));
+      }
+
+      .color-grid {
+        grid-template-columns: repeat(3, minmax(42px, 1fr));
+      }
+
+      .project-form-grid .wide {
+        grid-column: auto;
       }
 
       .tools,
@@ -694,98 +1472,31 @@
     </aside>
 
     <main>
-      <header class="topbar">
-        <div>
-          <h1>Dashboard</h1>
-          <p class="welcome">Welcome back, <span id="welcomeName">DEV</span>.</p>
-        </div>
-
-        <div class="tools">
-          <label class="search">
-            <span data-icon="search"></span>
-            <input type="search" placeholder="Search clients, invoices..." />
-          </label>
-
-          <div class="bell">
-            <span data-icon="bell"></span>
-            <span class="badge">3</span>
+      <section class="view active" id="dashboardView">
+        <header class="topbar">
+          <div>
+            <h1>Dashboard</h1>
+            <p class="welcome">Welcome back, <span id="welcomeName">DEV</span>.</p>
           </div>
-        </div>
-      </header>
 
-      <section class="grid">
-        <article class="card">
-          <div class="icon-box purple" data-icon="flower"></div>
-          <h2>VegasFlowers</h2>
-          <div class="type">Website Redesign</div>
-          <p class="desc">Homepage refresh, booking flow, and mobile polish.</p>
-          <div class="status">
-            <span class="dot"></span>
-            In Progress
-          </div>
-          <button class="open-btn">Open Project</button>
-        </article>
+          <div class="tools">
+            <button class="small-btn" id="dashboardEditBtn" type="button">Edit Projects</button>
+            <label class="search">
+              <span data-icon="search"></span>
+              <input id="projectSearch" type="search" placeholder="Search clients, invoices..." />
+            </label>
 
-        <article class="card">
-          <div class="icon-box blue" data-icon="car"></div>
-          <h2>Desert Detailing</h2>
-          <div class="type">Booking + Estimate Form</div>
-          <p class="desc">Online service form, pricing flow, and lead capture.</p>
-          <div class="status">
-            <span class="dot yellow"></span>
-            In Review
+            <div class="bell">
+              <span data-icon="bell"></span>
+              <span class="badge">3</span>
+            </div>
           </div>
-          <button class="open-btn">Open Project</button>
-        </article>
+        </header>
 
-        <article class="card">
-          <div class="icon-box purple" data-icon="moon"></div>
-          <h2>Luna Aesthetics</h2>
-          <div class="type">Branding Package</div>
-          <p class="desc">Visual identity update, landing page, and intake form.</p>
-          <div class="status">
-            <span class="dot purple"></span>
-            Drafting
-          </div>
-          <button class="open-btn">Open Project</button>
-        </article>
-
-        <article class="card">
-          <div class="icon-box blue" data-icon="home"></div>
-          <h2>Silver State Realty</h2>
-          <div class="type">CRM Setup</div>
-          <p class="desc">Lead pipeline organization, automations, and follow-up system.</p>
-          <div class="status">
-            <span class="dot"></span>
-            In Progress
-          </div>
-          <button class="open-btn">Open Project</button>
-        </article>
-
-        <article class="card">
-          <div class="icon-box purple" data-icon="dumbbell"></div>
-          <h2>Neon Fit Studio</h2>
-          <div class="type">Membership Portal</div>
-          <p class="desc">Client dashboard, class schedule, and sign-up experience.</p>
-          <div class="status">
-            <span class="dot cyan"></span>
-            Planning
-          </div>
-          <button class="open-btn">Open Project</button>
-        </article>
-
-        <article class="card">
-          <div class="icon-box green" data-icon="spray"></div>
-          <h2>Mojave Cleaners</h2>
-          <div class="type">Invoices + Scheduling</div>
-          <p class="desc">Recurring bookings, invoices, and confirmation workflow.</p>
-          <div class="status">
-            <span class="dot green"></span>
-            Active
-          </div>
-          <button class="open-btn">Open Project</button>
-        </article>
+        <section class="grid" id="projectGrid"></section>
       </section>
+
+      <section class="view" id="projectView"></section>
     </main>
   </div>
 
@@ -869,13 +1580,1126 @@
       car: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13l2-5h14l2 5"/><path d="M5 18h14a2 2 0 0 0 2-2v-3H3v3a2 2 0 0 0 2 2z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`,
       moon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/><path d="M18 3v4M20 5h-4M15 8v3M16.5 9.5h-3"/></svg>`,
       dumbbell: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7v10M18 7v10M3 9v6M21 9v6M6 12h12"/></svg>`,
-      spray: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v4H9z"/><path d="M10 7h4v3l3 3v8H7v-8l3-3z"/><path d="M8 17h8M18 4h3M19 8h2"/></svg>`
+      spray: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v4H9z"/><path d="M10 7h4v3l3 3v8H7v-8l3-3z"/><path d="M8 17h8M18 4h3M19 8h2"/></svg>`,
+      copy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
+      plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`,
+      trash: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 16H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>`,
+      edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>`,
+      arrow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>`,
+      check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>`,
+      code: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>`,
+      clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`,
+      briefcase: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6V4h4v2"/><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 12h18"/></svg>`,
+      star: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 7 .9-5 4.8 1.3 6.9L12 17l-6.3 3.6L7 13.7 2 8.9 9 8z"/></svg>`,
+      shapes: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="4"/><path d="M14 4h7v7h-7z"/><path d="M12 21l4-7 4 7z"/></svg>`,
+      wallet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18v14H3z"/><path d="M18 12h3v4h-3a2 2 0 0 1 0-4z"/><path d="M5 7V5h14v2"/></svg>`,
+      tag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13l-7 7L3 10V3h7z"/><circle cx="8" cy="8" r="1"/></svg>`,
+      lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>`,
+      key: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="14" r="4"/><path d="M10 11l9-9M15 6l3 3M13 8l3 3"/></svg>`,
+      wrench: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7a5 5 0 0 0 7 7L11 24 4 17 14 7z"/><path d="M4 17l-2-2 4-4"/></svg>`,
+      receipt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2l2 1 2-1 2 1 2-1 2 1 2-1 2 1 2-1v20l-2-1-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>`,
+      inbox: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16l2 10v6H2v-6z"/><path d="M2 14h6l2 3h4l2-3h6"/></svg>`,
+      print: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5h20v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>`,
+      table: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16M15 4v16"/></svg>`,
+      flag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 22V3"/><path d="M5 3h13l-2 5 2 5H5"/></svg>`,
+      bookmark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v19l-6-4-6 4z"/></svg>`,
+      heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>`,
+      sparkle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.1 6.9L21 12l-6.9 3.1L12 22l-3.1-6.9L2 12l6.9-3.1z"/></svg>`,
+      palette: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 0 0 18h1a2 2 0 0 0 0-4h-1a2 2 0 0 1 0-4h3a6 6 0 0 0 0-12z"/><circle cx="7.5" cy="10.5" r=".8"/><circle cx="10" cy="7" r=".8"/><circle cx="14" cy="7" r=".8"/></svg>`,
+      pen: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>`,
+      lightbulb: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12c.7.6 1 1.3 1 2h6c0-.7.3-1.4 1-2A7 7 0 0 0 12 2z"/></svg>`,
+      camera: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h4l2-3h4l2 3h4v15H4z"/><circle cx="12" cy="14" r="4"/></svg>`,
+      image: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><circle cx="8" cy="10" r="2"/><path d="M21 17l-5-5L5 21"/></svg>`,
+      music: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+      film: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/></svg>`,
+      layers: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l10 5-10 5L2 7z"/><path d="M2 12l10 5 10-5"/><path d="M2 17l10 5 10-5"/></svg>`,
+      brush: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3l3 3L9 18l-4 1 1-4z"/><path d="M4 21c2 0 4-1 4-3"/></svg>`,
+      magic: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20L20 4"/><path d="M14 4l2 2M3 7h4M5 5v4M17 16h4M19 14v4"/></svg>`,
+      sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>`,
+      leaf: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 4C12 4 4 9 4 18c7 1 16-4 16-14z"/><path d="M4 18c4-6 8-8 16-14"/></svg>`,
+      gem: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M8 3l4 18 4-18"/></svg>`,
+      crown: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l5 5 4-8 4 8 5-5-2 13H5z"/></svg>`,
+      fire: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-5-5-7-5-12-4 3-8 7-8 12a6 6 0 0 0 6 7z"/></svg>`,
+      trophy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4"/><path d="M6 3h12v5a6 6 0 1 1-12 0z"/><path d="M6 6H3a4 4 0 0 0 4 4M18 6h3a4 4 0 0 1-4 4"/></svg>`,
+      target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+      bicycle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="17" r="4"/><circle cx="18" cy="17" r="4"/><path d="M6 17l5-8 3 8M11 9h4M10 5h3"/></svg>`,
+      map: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>`,
+      pin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5.5 7-12a7 7 0 1 0-14 0c0 6.5 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg>`,
+      utensils: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2v8M8 2v8M6 2v20"/><path d="M14 2v20M14 2c4 2 4 8 0 10"/></svg>`,
+      coffee: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h14v7a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M18 10h1a3 3 0 0 1 0 6h-1M6 2v3M10 2v3M14 2v3"/></svg>`,
+      gift: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h18v14H3z"/><path d="M12 8v14M3 12h18"/><path d="M12 8C9 8 7 6 7 4a2 2 0 0 1 4 0c0 2-1 4-1 4M12 8c3 0 5-2 5-4a2 2 0 0 0-4 0c0 2 1 4 1 4"/></svg>`,
+      cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l3 13h12l2-9H7"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>`,
+      box: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>`,
+      truck: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h11v11H3z"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="7" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></svg>`,
+      globe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>`,
+      shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>`,
+      phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2c-10-.9-17-8-17.8-17.8A2 2 0 0 1 4 2h3l2 5-2 1c1 3 3 5 6 6l1-2z"/></svg>`,
+      message: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v12H7l-3 3z"/></svg>`,
+      cloud: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 18H7a5 5 0 1 1 1-9 7 7 0 0 1 13 4 4 4 0 0 1-3 5z"/></svg>`,
+      plug: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 7V2M15 7V2M7 7h10v4a5 5 0 0 1-10 0z"/><path d="M12 16v6"/></svg>`,
+      battery: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2M6 11h8"/></svg>`,
+      wifi: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8a20 20 0 0 1 20 0M5 12a14 14 0 0 1 14 0M8.5 16a8 8 0 0 1 7 0"/><circle cx="12" cy="20" r="1"/></svg>`,
+      toolbox: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6V4h8v2"/><rect x="3" y="6" width="18" height="16" rx="2"/><path d="M3 12h18"/></svg>`,
+      xmark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>`
     };
+
+    const PROJECT_STORAGE_KEY = "clientflow_projects_v1";
+    const ICON_RECENTS_KEY = "clientflow_icon_recents_v1";
+    const ICON_PAGE_SIZE = 18;
+    const TASK_OPTIONS = [
+      "Website Design",
+      "Booking + Estimate Form",
+      "Branding Package",
+      "CRM Setup",
+      "Membership Portal",
+      "Other"
+    ];
+    const STATUS_OPTIONS = ["In Progress", "Review", "Active", "Drafting", "Pending", "Reschedule", "Cancel", "Finished"];
+    const ICON_CATEGORIES = [
+      { id: "recents", label: "Recents", icon: "clock" },
+      { id: "business", label: "Business", icon: "briefcase" },
+      { id: "creative", label: "Creative", icon: "star" },
+      { id: "other", label: "Other", icon: "shapes" }
+    ];
+    const ICON_GROUPS = {
+      business: [
+        "file", "doc", "folder", "briefcase", "calendar", "clock",
+        "coin", "wallet", "chart", "users", "user-plus", "home",
+        "send", "upload", "download", "clipboard", "bell", "settings",
+        "tag", "lock", "key", "wrench", "receipt", "inbox",
+        "search", "print", "table", "flag", "bookmark", "check"
+      ],
+      creative: [
+        "flower", "moon", "star", "heart", "sparkle", "palette",
+        "pen", "lightbulb", "camera", "image", "music", "film",
+        "code", "layers", "shapes", "brush", "magic", "sun",
+        "leaf", "gem", "crown", "fire", "trophy", "target"
+      ],
+      other: [
+        "car", "dumbbell", "spray", "bicycle", "map", "pin",
+        "utensils", "coffee", "gift", "cart", "box", "truck",
+        "globe", "shield", "phone", "message", "cloud", "plug",
+        "battery", "wifi", "toolbox", "trash", "plus", "xmark"
+      ]
+    };
+    const ICON_OPTIONS = Object.values(ICON_GROUPS).flat();
+    const COLOR_OPTIONS = [
+      { id: "blue", label: "Blue", value: "#6b91ff" },
+      { id: "purple", label: "Purple", value: "#a985ff" },
+      { id: "green", label: "Green", value: "#56df9a" },
+      { id: "yellow", label: "Yellow", value: "#ffba35" },
+      { id: "cyan", label: "Cyan", value: "#62c6d7" },
+      { id: "pink", label: "Pink", value: "#ff74ba" },
+      { id: "orange", label: "Orange", value: "#ff9a52" },
+      { id: "red", label: "Red", value: "#ff3d55" },
+      { id: "white", label: "White", value: "#ffffff" }
+    ];
+    const STATUS_DOT_CLASS = {
+      "In Progress": "",
+      Review: "yellow",
+      Active: "green",
+      Drafting: "purple",
+      Pending: "cyan",
+      Reschedule: "yellow",
+      Cancel: "danger",
+      Finished: "green"
+    };
+
+    const dashboardView = document.getElementById("dashboardView");
+    const projectView = document.getElementById("projectView");
+    const projectGrid = document.getElementById("projectGrid");
+    const projectSearch = document.getElementById("projectSearch");
+    const dashboardEditBtn = document.getElementById("dashboardEditBtn");
+
+    let projects = loadProjects();
+    let activeProjectId = null;
+    let projectInfoOpen = false;
+    let activeCustomMenu = "";
+    let iconPickerCategory = "recents";
+    let iconPickerPage = 0;
+    let dashboardEditing = false;
+    let expandedNoteId = null;
+
+    function uid() {
+      return `id-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function iconSvg(name) {
+      const iconAliases = {
+        clipboard: "copy",
+        download: "upload",
+        circle: "check",
+        screwdriver: "wrench"
+      };
+
+      return icons[name] || icons[iconAliases[name]] || icons.file;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function defaultProjects() {
+      return [
+        {
+          id: "vegasflowers",
+          title: "VegasFlowers",
+          task: "Website Design",
+          customTask: "",
+          description: "Homepage refresh, booking flow, and mobile polish.",
+          status: "In Progress",
+          icon: "flower",
+          color: "purple",
+          copyBlocks: []
+        },
+        {
+          id: "desert-detailing",
+          title: "Desert Detailing",
+          task: "Booking + Estimate Form",
+          customTask: "",
+          description: "Online service form, pricing flow, and lead capture.",
+          status: "Review",
+          icon: "car",
+          color: "blue",
+          copyBlocks: []
+        },
+        {
+          id: "luna-aesthetics",
+          title: "Luna Aesthetics",
+          task: "Branding Package",
+          customTask: "",
+          description: "Visual identity update, landing page, and intake form.",
+          status: "Drafting",
+          icon: "moon",
+          color: "purple",
+          copyBlocks: []
+        },
+        {
+          id: "silver-state-realty",
+          title: "Silver State Realty",
+          task: "CRM Setup",
+          customTask: "",
+          description: "Lead pipeline organization, automations, and follow-up system.",
+          status: "In Progress",
+          icon: "home",
+          color: "blue",
+          copyBlocks: []
+        },
+        {
+          id: "neon-fit-studio",
+          title: "Neon Fit Studio",
+          task: "Membership Portal",
+          customTask: "",
+          description: "Client dashboard, class schedule, and sign-up experience.",
+          status: "Pending",
+          icon: "dumbbell",
+          color: "purple",
+          copyBlocks: []
+        },
+        {
+          id: "mojave-cleaners",
+          title: "Mojave Cleaners",
+          task: "Other",
+          customTask: "Invoices + Scheduling",
+          description: "Recurring bookings, invoices, and confirmation workflow.",
+          status: "Active",
+          icon: "spray",
+          color: "green",
+          copyBlocks: []
+        }
+      ];
+    }
+
+    function cleanProject(project, fallback) {
+      const cleaned = { ...fallback, ...project };
+      cleaned.id = cleaned.id || uid();
+      cleaned.title = cleaned.title || "Untitled Project";
+      cleaned.task = TASK_OPTIONS.includes(cleaned.task) ? cleaned.task : "Other";
+      cleaned.customTask = cleaned.customTask || "";
+      cleaned.description = cleaned.description || "";
+      cleaned.status = STATUS_OPTIONS.includes(cleaned.status) ? cleaned.status : "Pending";
+      cleaned.icon = ICON_OPTIONS.includes(cleaned.icon) ? cleaned.icon : "file";
+      cleaned.color = COLOR_OPTIONS.some((color) => color.id === cleaned.color) ? cleaned.color : "blue";
+      cleaned.copyBlocks = Array.isArray(cleaned.copyBlocks) ? cleaned.copyBlocks.map(cleanBlock) : [];
+      cleaned.noteBlocks = Array.isArray(cleaned.noteBlocks) ? cleaned.noteBlocks.map(cleanNoteBlock) : [];
+      return cleaned;
+    }
+
+    function cleanBlock(block) {
+      return {
+        id: block.id || uid(),
+        label: block.label || "Copy Block",
+        content: block.content || "",
+        format: block.format === "code" ? "code" : "text",
+        expanded: Boolean(block.expanded),
+        editing: Boolean(block.editing),
+        copied: false
+      };
+    }
+
+    function cleanNoteBlock(block) {
+      const isLegacyChecklist = !block.type && Array.isArray(block.items);
+      const type = block.type === "note" && !isLegacyChecklist ? "note" : "checklist";
+
+      return {
+        id: block.id || uid(),
+        type,
+        title: block.title || "Note Block",
+        content: block.content || "",
+        expanded: Boolean(block.expanded),
+        items: Array.isArray(block.items) && block.items.length
+          ? block.items.map((item) => ({
+              id: item.id || uid(),
+              text: item.text || "",
+              checked: Boolean(item.checked)
+            }))
+          : [{ id: uid(), text: "", checked: false }]
+      };
+    }
+
+    function loadProjects() {
+      const defaults = defaultProjects();
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(PROJECT_STORAGE_KEY));
+        if (Array.isArray(saved)) {
+          const fallbackById = new Map(defaults.map((project) => [project.id, project]));
+          return saved.map((project, index) => cleanProject(project, fallbackById.get(project.id) || defaults[index] || {}));
+        }
+      } catch (error) {
+        console.warn("Unable to load ClientFlow projects.", error);
+      }
+
+      return defaults;
+    }
+
+    function saveProjects() {
+      const storable = projects.map((project) => ({
+        ...project,
+        copyBlocks: project.copyBlocks.map(({ copied, editing, ...block }) => block)
+      }));
+
+      localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(storable));
+    }
+
+    function taskLabel(project) {
+      return project.task === "Other" ? project.customTask || "Other" : project.task;
+    }
+
+    function dotHtml(status) {
+      const dotClass = STATUS_DOT_CLASS[status] || "";
+      return `<span class="dot ${dotClass}"></span>`;
+    }
+
+    function statusDotStyle(status) {
+      const dotClass = STATUS_DOT_CLASS[status] || "";
+      const colorMap = {
+        yellow: "var(--yellow)",
+        purple: "var(--purple)",
+        cyan: "#62c6d7",
+        green: "#66d48a",
+        danger: "var(--danger)"
+      };
+
+      return colorMap[dotClass] || "var(--blue)";
+    }
+
+    function colorValue(colorId) {
+      return COLOR_OPTIONS.find((color) => color.id === colorId)?.value || "var(--blue)";
+    }
+
+    function loadRecentIcons() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(ICON_RECENTS_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed.filter((icon) => ICON_OPTIONS.includes(icon)).slice(0, 12) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function rememberIcon(icon) {
+      localStorage.setItem(
+        ICON_RECENTS_KEY,
+        JSON.stringify([icon, ...loadRecentIcons().filter((item) => item !== icon)].slice(0, 12))
+      );
+    }
+
+    function categoryIcons(categoryId) {
+      if (categoryId === "recents") {
+        const recents = loadRecentIcons();
+        const fill = ICON_OPTIONS.filter((icon) => !recents.includes(icon));
+        return [...recents, ...fill].slice(0, 12);
+      }
+
+      return ICON_GROUPS[categoryId] || [];
+    }
+
+    function renderMenuControl({ label, field, value, options, menuId, withStatusDots = false }) {
+      const selectedLabel = options.find((option) => option.value === value)?.label || value;
+
+      return `
+        <div class="control-stack">
+          <label>${escapeHtml(label)}</label>
+          <button class="control-btn" type="button" data-command="toggle-menu" data-menu="${escapeHtml(menuId)}">
+            <span class="control-value">
+              ${withStatusDots ? `<span class="status-dot-option" style="background:${statusDotStyle(value)}"></span>` : ""}
+              ${escapeHtml(selectedLabel)}
+            </span>
+            <span class="chevron">⌄</span>
+          </button>
+          <div class="custom-menu ${activeCustomMenu === menuId ? "open" : ""}" data-menu-panel="${escapeHtml(menuId)}">
+            ${options.map((option) => `
+              <button class="picker-option ${option.value === value ? "active" : ""}" type="button" data-command="set-project-field" data-project-field="${escapeHtml(field)}" data-value="${escapeHtml(option.value)}">
+                <span class="control-value">
+                  ${withStatusDots ? `<span class="status-dot-option" style="background:${statusDotStyle(option.value)}"></span>` : ""}
+                  ${escapeHtml(option.label)}
+                </span>
+                ${option.value === value ? iconSvg("check") : ""}
+              </button>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderIconPicker(project) {
+      const iconsForCategory = categoryIcons(iconPickerCategory);
+      const pageSize = iconPickerCategory === "recents" ? 12 : ICON_PAGE_SIZE;
+      const pageCount = Math.max(1, Math.ceil(iconsForCategory.length / pageSize));
+      iconPickerPage = Math.min(iconPickerPage, pageCount - 1);
+      const visibleIcons = iconsForCategory.slice(iconPickerPage * pageSize, iconPickerPage * pageSize + pageSize);
+
+      return `
+        <div class="icon-picker">
+          <div class="icon-category-row" role="tablist" aria-label="Icon categories">
+            ${ICON_CATEGORIES.map((category) => `
+              <button class="icon-category ${category.id === iconPickerCategory ? "active" : ""}" type="button" data-command="icon-category" data-icon-category="${escapeHtml(category.id)}">
+                ${iconSvg(category.icon)}
+                <span>${escapeHtml(category.label)}</span>
+              </button>
+            `).join("")}
+          </div>
+
+          <div class="icon-grid" role="group" aria-label="Project icon choices">
+            ${visibleIcons.map((icon) => `
+              <button class="icon-choice ${icon === project.icon ? "active" : ""}" type="button" data-command="set-project-icon" data-icon-value="${escapeHtml(icon)}" aria-label="${escapeHtml(icon)} icon">
+                ${iconSvg(icon)}
+              </button>
+            `).join("")}
+          </div>
+
+          ${iconPickerCategory !== "recents" && pageCount > 1 ? `
+            <div class="icon-pager" aria-label="Icon pages">
+              <button class="icon-page-button" type="button" data-command="icon-page" data-icon-page="prev" ${iconPickerPage === 0 ? "disabled" : ""}>‹</button>
+              ${Array.from({ length: pageCount }, (_, index) => `
+                <button class="icon-page-number ${index === iconPickerPage ? "active" : ""}" type="button" data-command="icon-page-number" data-icon-page-number="${index}">${index + 1}</button>
+              `).join("")}
+              <button class="icon-page-button" type="button" data-command="icon-page" data-icon-page="next" ${iconPickerPage === pageCount - 1 ? "disabled" : ""}>›</button>
+            </div>
+          ` : ""}
+        </div>
+      `;
+    }
+
+    function renderColorPicker(project) {
+      return `
+        <div class="color-picker">
+          <div class="color-grid" role="group" aria-label="Icon colors">
+            ${COLOR_OPTIONS.map((color) => `
+              <button class="color-swatch ${project.color === color.id ? "active" : ""}" type="button" data-command="set-project-color" data-color-value="${escapeHtml(color.id)}" style="--swatch:${escapeHtml(color.value)}" aria-label="${escapeHtml(color.label)}"></button>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDashboardProjectCards() {
+      const query = projectSearch.value.trim().toLowerCase();
+      const visibleProjects = projects.filter((project) => {
+        const haystack = `${project.title} ${taskLabel(project)} ${project.description} ${project.status}`.toLowerCase();
+        return haystack.includes(query);
+      });
+
+      projectGrid.innerHTML = visibleProjects.map((project) => `
+        <article class="card">
+          ${dashboardEditing ? `<button class="small-btn danger card-delete-btn" type="button" data-delete-project="${escapeHtml(project.id)}" aria-label="Delete project">${iconSvg("trash")}</button>` : ""}
+          <div class="icon-box ${escapeHtml(project.color)}">${iconSvg(project.icon)}</div>
+          <h2>${escapeHtml(project.title)}</h2>
+          <div class="type">${escapeHtml(taskLabel(project))}</div>
+          <p class="desc">${escapeHtml(project.description)}</p>
+          <div class="status">
+            ${dotHtml(project.status)}
+            ${escapeHtml(project.status)}
+          </div>
+          <button class="open-btn" type="button" data-open-project="${escapeHtml(project.id)}">Open Project</button>
+        </article>
+      `).join("") + `
+        <button class="add-project-card" type="button" data-command="add-project" aria-label="Add project">
+          <span class="add-project-plus">${iconSvg("plus")}</span>
+        </button>
+      `;
+
+      dashboardEditBtn.textContent = dashboardEditing ? "Done Editing" : "Edit Projects";
+    }
+
+    function findProject(projectId) {
+      return projects.find((project) => project.id === projectId);
+    }
+
+    function openProject(projectId) {
+      activeProjectId = projectId;
+      projectInfoOpen = false;
+      expandedNoteId = null;
+      activeCustomMenu = "";
+      dashboardView.classList.remove("active");
+      projectView.classList.add("active");
+      renderProjectDetails();
+      projectView.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function backToDashboard() {
+      activeProjectId = null;
+      expandedNoteId = null;
+      projectInfoOpen = false;
+      activeCustomMenu = "";
+      projectView.classList.remove("active");
+      dashboardView.classList.add("active");
+      renderDashboardProjectCards();
+      dashboardView.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function addProject() {
+      const project = cleanProject({
+        id: uid(),
+        title: "New Project",
+        task: "Other",
+        customTask: "",
+        description: "",
+        status: "Pending",
+        icon: "file",
+        color: "white",
+        copyBlocks: [],
+        noteBlocks: []
+      }, {});
+
+      projects.push(project);
+      saveProjects();
+      renderDashboardProjectCards();
+      openProject(project.id);
+    }
+
+    function deleteProject(projectId) {
+      const index = projects.findIndex((project) => project.id === projectId);
+      if (index < 0) return;
+
+      projects.splice(index, 1);
+      saveProjects();
+
+      if (activeProjectId === projectId) {
+        projectInfoOpen = false;
+        expandedNoteId = null;
+        backToDashboard();
+        return;
+      }
+
+      renderDashboardProjectCards();
+    }
+
+    function renderProjectDetails() {
+      const project = findProject(activeProjectId);
+      if (!project) {
+        backToDashboard();
+        return;
+      }
+
+      projectView.innerHTML = `
+        <div class="project-page">
+          <div class="project-top">
+            <div class="project-heading">
+              <div class="icon-box icon-preview" style="color:${colorValue(project.color)}">${iconSvg(project.icon)}</div>
+              <div>
+                <input class="project-title-input" type="text" value="${escapeHtml(project.title)}" data-project-field="title" aria-label="Project title" />
+                <div class="project-status-line">
+                  ${dotHtml(project.status)}
+                  <span>${escapeHtml(project.status)}</span>
+                </div>
+              </div>
+            </div>
+            <div class="project-actions">
+              <button class="back-btn" type="button" data-command="open-project-info">${iconSvg("edit")} Edit</button>
+              <button class="back-btn" type="button" data-command="back-to-dashboard">${iconSvg("arrow")} Back</button>
+            </div>
+          </div>
+
+          <section class="project-panel copy-section">
+            <div class="copy-section-head">
+              <h2>Notes</h2>
+              <div class="add-menu-wrap">
+                <button class="add-block-btn" type="button" data-command="toggle-menu" data-menu="add-note-menu">${iconSvg("plus")} Add</button>
+                <div class="custom-menu ${activeCustomMenu === "add-note-menu" ? "open" : ""}">
+                  <button class="picker-option" type="button" data-command="add-note-block" data-note-type="note">${iconSvg("note")} Note</button>
+                  <button class="picker-option" type="button" data-command="add-note-block" data-note-type="checklist">${iconSvg("check")} Checklist</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="notes-grid" id="noteBlocks">
+              ${renderNoteBlocks(project)}
+            </div>
+          </section>
+
+          <section class="project-panel copy-section">
+            <div class="copy-section-head">
+              <h2>Copy Blocks</h2>
+              <button class="add-block-btn" type="button" data-command="add-copy-block">${iconSvg("plus")} Add Copy Block</button>
+            </div>
+
+            <div class="copy-block-grid" id="copyBlocks">
+              ${renderCopyBlocks(project)}
+            </div>
+          </section>
+
+          ${projectInfoOpen ? renderProjectInfoModal(project) : ""}
+          ${expandedNoteId ? renderExpandedNoteModal(project) : ""}
+        </div>
+      `;
+    }
+
+    function renderProjectInfoModal(project) {
+      return `
+        <div class="modal open" data-modal="project-info">
+          <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="projectInfoTitle">
+            <div class="sheet-head">
+              <h2 id="projectInfoTitle">Project Information</h2>
+              <div class="copy-block-actions">
+                <button class="small-btn danger" type="button" data-command="delete-active-project">${iconSvg("trash")} Delete Project</button>
+                <button class="small-btn" type="button" data-command="close-project-info">${iconSvg("xmark")} Close</button>
+              </div>
+            </div>
+
+            <div class="project-form-grid">
+              ${renderMenuControl({
+                label: "Current Task",
+                field: "task",
+                value: project.task,
+                menuId: "task",
+                options: TASK_OPTIONS.map((task) => ({ label: task, value: task }))
+              })}
+
+              ${renderMenuControl({
+                label: "Status",
+                field: "status",
+                value: project.status,
+                menuId: "status",
+                withStatusDots: true,
+                options: STATUS_OPTIONS.map((status) => ({ label: status, value: status }))
+              })}
+
+              <div class="field wide" ${project.task === "Other" ? "" : "hidden"}>
+                <label for="customTask">Custom Task</label>
+                <input id="customTask" type="text" value="${escapeHtml(project.customTask)}" data-project-field="customTask" placeholder="Custom project task" />
+              </div>
+
+              <div class="field wide">
+                <label for="projectDescription">Project Description</label>
+                <textarea id="projectDescription" data-project-field="description" placeholder="Project description">${escapeHtml(project.description)}</textarea>
+              </div>
+
+              <div class="control-stack wide">
+                <label>Project Icon</label>
+                ${renderIconPicker(project)}
+              </div>
+
+              <div class="control-stack wide">
+                <label>Icon Color</label>
+                ${renderColorPicker(project)}
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderCopyBlocks(project) {
+      if (!project.copyBlocks.length) {
+        return `<div class="empty-blocks">No copy blocks yet.</div>`;
+      }
+
+      return project.copyBlocks.map((block) => {
+        const collapsed = !block.expanded;
+        const previewClass = `copy-preview ${block.format === "code" ? "code" : ""} ${collapsed ? "collapsed" : "expanded"}`;
+
+        return `
+          <article class="copy-block" data-block-id="${escapeHtml(block.id)}">
+            <div class="copy-block-top">
+              <div class="copy-block-title">${escapeHtml(block.label)}</div>
+              <div class="copy-block-actions">
+                <span class="copy-confirm">${block.copied ? "Copied!" : ""}</span>
+                <button class="copy-button" type="button" data-command="copy-block" data-block-id="${escapeHtml(block.id)}" aria-label="Copy block">${iconSvg("copy")}</button>
+                <button class="small-btn block-icon-button" type="button" data-command="edit-block" data-block-id="${escapeHtml(block.id)}" aria-label="${block.editing ? "Done editing" : "Edit block"}">${iconSvg(block.editing ? "check" : "edit")}</button>
+              </div>
+            </div>
+
+            ${block.editing ? `
+              <div class="copy-edit-grid">
+                <div class="copy-edit-row">
+                  <div class="field">
+                    <label>Block Label</label>
+                    <input type="text" value="${escapeHtml(block.label)}" data-block-field="label" data-block-id="${escapeHtml(block.id)}" />
+                  </div>
+                  <div class="control-stack">
+                    <label>Format</label>
+                    <div class="format-row">
+                      <button class="format-choice ${block.format === "text" ? "active" : ""}" type="button" data-command="set-block-format" data-block-id="${escapeHtml(block.id)}" data-format="text">Text</button>
+                      <button class="format-choice ${block.format === "code" ? "active" : ""}" type="button" data-command="set-block-format" data-block-id="${escapeHtml(block.id)}" data-format="code">Code</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Content</label>
+                  <textarea data-block-field="content" data-block-id="${escapeHtml(block.id)}" placeholder="Paste reusable content here">${escapeHtml(block.content)}</textarea>
+                </div>
+              </div>
+            ` : `
+              <div class="${previewClass}" data-command="toggle-block" data-block-id="${escapeHtml(block.id)}" title="${collapsed ? "Expand" : "Collapse"}">${escapeHtml(block.content || "Empty copy block.")}</div>
+            `}
+
+            <div class="copy-block-actions">
+              ${block.editing ? `
+                <button class="small-btn" type="button" data-command="move-copy-block" data-block-id="${escapeHtml(block.id)}" data-direction="up">Move Up</button>
+                <button class="small-btn" type="button" data-command="move-copy-block" data-block-id="${escapeHtml(block.id)}" data-direction="down">Move Down</button>
+              ` : ""}
+              <button class="small-btn" type="button" data-command="toggle-block" data-block-id="${escapeHtml(block.id)}">${block.expanded ? "Collapse" : "Expand"}</button>
+              <button class="small-btn danger" type="button" data-command="delete-block" data-block-id="${escapeHtml(block.id)}">${iconSvg("trash")} Delete</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderNoteBlocks(project) {
+      if (!project.noteBlocks.length) {
+        return `<div class="empty-blocks">No notes yet.</div>`;
+      }
+
+      return project.noteBlocks.map((block) => {
+        const isNote = block.type === "note";
+
+        return `
+          <article class="note-block" data-note-id="${escapeHtml(block.id)}">
+            <div class="note-title-row">
+              <input class="check-input" type="text" value="${escapeHtml(block.title)}" data-note-field="title" data-note-id="${escapeHtml(block.id)}" aria-label="${isNote ? "Note" : "Checklist"} title" />
+              <div class="copy-block-actions">
+                ${isNote ? `<button class="small-btn" type="button" data-command="expand-note" data-note-id="${escapeHtml(block.id)}">${iconSvg("edit")} Expand</button>` : `<button class="small-btn" type="button" data-command="add-check-item" data-note-id="${escapeHtml(block.id)}">${iconSvg("plus")} Checkbox</button>`}
+                <button class="small-btn danger" type="button" data-command="delete-note-block" data-note-id="${escapeHtml(block.id)}">${iconSvg("trash")} Delete</button>
+              </div>
+            </div>
+
+            ${isNote ? `
+              <div class="note-preview ${block.expanded ? "expanded" : ""}" data-command="expand-note" data-note-id="${escapeHtml(block.id)}">${escapeHtml(block.content || "Empty note.")}</div>
+            ` : `
+              <div class="check-list">
+                ${block.items.map((item) => `
+                  <div class="check-row" data-check-id="${escapeHtml(item.id)}">
+                    <button class="check-toggle ${item.checked ? "checked" : ""}" type="button" data-command="toggle-check-item" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" aria-label="Toggle checkbox">${item.checked ? iconSvg("check") : ""}</button>
+                    <input class="check-input" type="text" value="${escapeHtml(item.text)}" data-check-field="text" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" placeholder="Checkbox item" />
+                    <button class="small-btn danger block-icon-button" type="button" data-command="delete-check-item" data-note-id="${escapeHtml(block.id)}" data-check-id="${escapeHtml(item.id)}" aria-label="Delete checkbox">${iconSvg("trash")}</button>
+                  </div>
+                `).join("")}
+              </div>
+            `}
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderExpandedNoteModal(project) {
+      const note = project.noteBlocks.find((block) => block.id === expandedNoteId);
+      if (!note) return "";
+
+      return `
+        <div class="modal open" data-modal="expanded-note">
+          <section class="sheet expanded-note" role="dialog" aria-modal="true" aria-labelledby="expandedNoteTitle">
+            <div class="sheet-head">
+              <h2 id="expandedNoteTitle">${escapeHtml(note.title || "Note")}</h2>
+              <button class="small-btn" type="button" data-command="close-expanded-note">${iconSvg("xmark")} Close</button>
+            </div>
+            <div class="note-popup-body">
+              <input class="check-input" type="text" value="${escapeHtml(note.title)}" data-note-field="title" data-note-id="${escapeHtml(note.id)}" aria-label="Expanded note title" />
+              <textarea class="note-popup-field" data-note-field="content" data-note-id="${escapeHtml(note.id)}" placeholder="Write note details here">${escapeHtml(note.content || "")}</textarea>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function saveProjectUpdates(field, value, shouldRender = false) {
+      const project = findProject(activeProjectId);
+      if (!project) return;
+
+      project[field] = value;
+
+      if (field === "task" && value !== "Other") {
+        project.customTask = "";
+      }
+
+      saveProjects();
+      if (shouldRender) {
+        renderProjectDetails();
+      }
+    }
+
+    function openProjectInfo() {
+      projectInfoOpen = true;
+      activeCustomMenu = "";
+      renderProjectDetails();
+    }
+
+    function closeProjectInfo() {
+      projectInfoOpen = false;
+      activeCustomMenu = "";
+      renderProjectDetails();
+    }
+
+    function setProjectField(field, value) {
+      saveProjectUpdates(field, value);
+      activeCustomMenu = "";
+      renderProjectDetails();
+    }
+
+    function setProjectIcon(icon) {
+      saveProjectUpdates("icon", icon);
+      rememberIcon(icon);
+      renderProjectDetails();
+    }
+
+    function setProjectColor(color) {
+      saveProjectUpdates("color", color);
+      renderProjectDetails();
+    }
+
+    function addCopyBlock() {
+      const project = findProject(activeProjectId);
+      if (!project) return;
+
+      project.copyBlocks.unshift({
+        id: uid(),
+        label: "New Copy Block",
+        content: "",
+        format: "text",
+        expanded: false,
+        editing: true,
+        copied: false
+      });
+
+      saveProjects();
+      renderProjectDetails();
+    }
+
+    function updateCopyBlock(blockId, field, value) {
+      const project = findProject(activeProjectId);
+      const block = project?.copyBlocks.find((item) => item.id === blockId);
+      if (!block) return;
+
+      block[field] = value;
+      saveProjects();
+
+      if (field === "format") {
+        renderProjectDetails();
+      }
+    }
+
+    function addNoteBlock(type = "note") {
+      const project = findProject(activeProjectId);
+      if (!project) return;
+
+      project.noteBlocks.unshift({
+        id: uid(),
+        type: type === "checklist" ? "checklist" : "note",
+        title: type === "checklist" ? "Checklist" : "Note",
+        content: "",
+        expanded: false,
+        items: [{ id: uid(), text: "", checked: false }]
+      });
+
+      activeCustomMenu = "";
+      saveProjects();
+      renderProjectDetails();
+    }
+
+    function updateNoteBlock(noteId, field, value) {
+      const project = findProject(activeProjectId);
+      const note = project?.noteBlocks.find((item) => item.id === noteId);
+      if (!note) return;
+
+      note[field] = value;
+      saveProjects();
+    }
+
+    function deleteNoteBlock(noteId) {
+      const project = findProject(activeProjectId);
+      if (!project) return;
+
+      project.noteBlocks = project.noteBlocks.filter((note) => note.id !== noteId);
+      saveProjects();
+      renderProjectDetails();
+    }
+
+    function addCheckItem(noteId) {
+      const project = findProject(activeProjectId);
+      const note = project?.noteBlocks.find((item) => item.id === noteId);
+      if (!note) return;
+
+      note.items.push({ id: uid(), text: "", checked: false });
+      saveProjects();
+      renderProjectDetails();
+    }
+
+    function updateCheckItem(noteId, checkId, field, value) {
+      const project = findProject(activeProjectId);
+      const note = project?.noteBlocks.find((item) => item.id === noteId);
+      const item = note?.items.find((check) => check.id === checkId);
+      if (!item) return;
+
+      item[field] = value;
+      saveProjects();
+    }
+
+    function toggleCheckItem(noteId, checkId) {
+      const project = findProject(activeProjectId);
+      const note = project?.noteBlocks.find((item) => item.id === noteId);
+      const item = note?.items.find((check) => check.id === checkId);
+      if (!item) return;
+
+      item.checked = !item.checked;
+      saveProjects();
+      renderProjectDetails();
+    }
+
+    function deleteCheckItem(noteId, checkId) {
+      const project = findProject(activeProjectId);
+      const note = project?.noteBlocks.find((item) => item.id === noteId);
+      if (!note) return;
+
+      note.items = note.items.filter((item) => item.id !== checkId);
+      if (!note.items.length) note.items.push({ id: uid(), text: "", checked: false });
+      saveProjects();
+      renderProjectDetails();
+    }
+
+    function expandNote(noteId) {
+      expandedNoteId = noteId;
+      renderProjectDetails();
+    }
+
+    function closeExpandedNote() {
+      expandedNoteId = null;
+      renderProjectDetails();
+    }
+
+    function toggleCopyBlock(blockId) {
+      const project = findProject(activeProjectId);
+      const block = project?.copyBlocks.find((item) => item.id === blockId);
+      if (!block) return;
+
+      block.expanded = !block.expanded;
+      saveProjects();
+      renderProjectDetails();
+    }
+
+    function editCopyBlock(blockId) {
+      const project = findProject(activeProjectId);
+      const block = project?.copyBlocks.find((item) => item.id === blockId);
+      if (!block) return;
+
+      block.editing = !block.editing;
+      saveProjects();
+      renderProjectDetails();
+    }
+
+    function moveCopyBlock(blockId, direction) {
+      const project = findProject(activeProjectId);
+      if (!project) return;
+
+      const index = project.copyBlocks.findIndex((block) => block.id === blockId);
+      const nextIndex = direction === "up" ? index - 1 : index + 1;
+
+      if (index < 0 || nextIndex < 0 || nextIndex >= project.copyBlocks.length) return;
+
+      const [block] = project.copyBlocks.splice(index, 1);
+      project.copyBlocks.splice(nextIndex, 0, block);
+      saveProjects();
+      renderProjectDetails();
+    }
+
+    function deleteCopyBlock(blockId) {
+      const project = findProject(activeProjectId);
+      if (!project) return;
+
+      project.copyBlocks = project.copyBlocks.filter((block) => block.id !== blockId);
+      saveProjects();
+      renderProjectDetails();
+    }
+
+    async function copyBlockContent(blockId) {
+      const project = findProject(activeProjectId);
+      const block = project?.copyBlocks.find((item) => item.id === blockId);
+      if (!block) return;
+
+      try {
+        await navigator.clipboard.writeText(block.content);
+      } catch (error) {
+        const helper = document.createElement("textarea");
+        helper.value = block.content;
+        helper.setAttribute("readonly", "");
+        helper.style.position = "fixed";
+        helper.style.opacity = "0";
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand("copy");
+        helper.remove();
+      }
+
+      block.copied = true;
+      renderProjectDetails();
+
+      window.setTimeout(() => {
+        block.copied = false;
+        if (activeProjectId === project.id) renderProjectDetails();
+      }, 1200);
+    }
 
     document.querySelectorAll("[data-icon]").forEach((element) => {
       const name = element.dataset.icon;
-      element.innerHTML = icons[name] || "";
+      element.innerHTML = iconSvg(name);
     });
+
+    projectSearch.addEventListener("input", renderDashboardProjectCards);
+
+    dashboardEditBtn.addEventListener("click", () => {
+      dashboardEditing = !dashboardEditing;
+      renderDashboardProjectCards();
+    });
+
+    projectGrid.addEventListener("click", (event) => {
+      const addButton = event.target.closest("[data-command='add-project']");
+      const deleteButton = event.target.closest("[data-delete-project]");
+      const button = event.target.closest("[data-open-project]");
+
+      if (addButton) {
+        addProject();
+        return;
+      }
+
+      if (deleteButton) {
+        deleteProject(deleteButton.dataset.deleteProject);
+        return;
+      }
+
+      if (button) openProject(button.dataset.openProject);
+    });
+
+    projectView.addEventListener("input", (event) => {
+      const projectField = event.target.dataset.projectField;
+      const blockField = event.target.dataset.blockField;
+      const noteField = event.target.dataset.noteField;
+      const checkField = event.target.dataset.checkField;
+
+      if (projectField) {
+        saveProjectUpdates(projectField, event.target.value);
+      }
+
+      if (blockField) {
+        updateCopyBlock(event.target.dataset.blockId, blockField, event.target.value);
+      }
+
+      if (noteField) {
+        updateNoteBlock(event.target.dataset.noteId, noteField, event.target.value);
+      }
+
+      if (checkField) {
+        updateCheckItem(event.target.dataset.noteId, event.target.dataset.checkId, checkField, event.target.value);
+      }
+    });
+
+    projectView.addEventListener("change", (event) => {
+      const projectField = event.target.dataset.projectField;
+      const blockField = event.target.dataset.blockField;
+
+      if (projectField) {
+        saveProjectUpdates(projectField, event.target.value);
+      }
+
+      if (blockField) {
+        updateCopyBlock(event.target.dataset.blockId, blockField, event.target.value);
+      }
+    });
+
+    projectView.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-command]");
+      if (!button) return;
+
+      const command = button.dataset.command;
+      const blockId = button.dataset.blockId;
+
+      if (command === "back-to-dashboard") backToDashboard();
+      if (command === "open-project-info") openProjectInfo();
+      if (command === "close-project-info") closeProjectInfo();
+      if (command === "delete-active-project") deleteProject(activeProjectId);
+      if (command === "toggle-menu") {
+        activeCustomMenu = activeCustomMenu === button.dataset.menu ? "" : button.dataset.menu;
+        renderProjectDetails();
+      }
+      if (command === "set-project-field") setProjectField(button.dataset.projectField, button.dataset.value);
+      if (command === "set-project-icon") setProjectIcon(button.dataset.iconValue);
+      if (command === "set-project-color") setProjectColor(button.dataset.colorValue);
+      if (command === "icon-category") {
+        iconPickerCategory = button.dataset.iconCategory;
+        iconPickerPage = 0;
+        renderProjectDetails();
+      }
+      if (command === "icon-page") {
+        iconPickerPage += button.dataset.iconPage === "next" ? 1 : -1;
+        renderProjectDetails();
+      }
+      if (command === "icon-page-number") {
+        iconPickerPage = Number(button.dataset.iconPageNumber) || 0;
+        renderProjectDetails();
+      }
+      if (command === "add-copy-block") addCopyBlock();
+      if (command === "toggle-block") toggleCopyBlock(blockId);
+      if (command === "edit-block") editCopyBlock(blockId);
+      if (command === "set-block-format") updateCopyBlock(blockId, "format", button.dataset.format);
+      if (command === "move-copy-block") moveCopyBlock(blockId, button.dataset.direction);
+      if (command === "delete-block") deleteCopyBlock(blockId);
+      if (command === "copy-block") copyBlockContent(blockId);
+      if (command === "add-note-block") addNoteBlock(button.dataset.noteType);
+      if (command === "delete-note-block") deleteNoteBlock(button.dataset.noteId);
+      if (command === "add-check-item") addCheckItem(button.dataset.noteId);
+      if (command === "toggle-check-item") toggleCheckItem(button.dataset.noteId, button.dataset.checkId);
+      if (command === "delete-check-item") deleteCheckItem(button.dataset.noteId, button.dataset.checkId);
+      if (command === "expand-note") expandNote(button.dataset.noteId);
+      if (command === "close-expanded-note") closeExpandedNote();
+    });
+
+    projectView.addEventListener("click", (event) => {
+      const modal = event.target.closest("[data-modal='project-info']");
+      if (event.target === modal) {
+        closeProjectInfo();
+      }
+
+      const noteModal = event.target.closest("[data-modal='expanded-note']");
+      if (event.target === noteModal) {
+        closeExpandedNote();
+      }
+    });
+
+    renderDashboardProjectCards();
   </script>
 </body>
 </html>
