@@ -619,7 +619,6 @@
         z-index: 2;
       }
 
-
       .card.expanded .desc {
         display: block;
         max-height: 112px;
@@ -1723,15 +1722,33 @@
         text-align: center;
       }
 
-      .blue { color: var(--blue); }
-      .purple { color: var(--purple); }
-      .green { color: var(--green); }
-      .yellow { color: var(--yellow); }
-      .cyan { color: #62c6d7; }
-      .pink { color: #ff74ba; }
-      .orange { color: #ff9a52; }
-      .red { color: var(--danger); }
-      .white { color: #ffffff; }
+      .blue {
+        color: var(--blue);
+      }
+      .purple {
+        color: var(--purple);
+      }
+      .green {
+        color: var(--green);
+      }
+      .yellow {
+        color: var(--yellow);
+      }
+      .cyan {
+        color: #62c6d7;
+      }
+      .pink {
+        color: #ff74ba;
+      }
+      .orange {
+        color: #ff9a52;
+      }
+      .red {
+        color: var(--danger);
+      }
+      .white {
+        color: #ffffff;
+      }
 
       @media (max-width: 1180px) {
         .app {
@@ -1833,7 +1850,7 @@
           grid-template-columns: 1fr;
         }
       }
-</style>
+    </style>
   </head>
 
   <body class="locked">
@@ -2269,7 +2286,7 @@
           .replace(/'/g, "&#039;");
       }
 
-                                                                                          function renderMenuControl({
+      function renderMenuControl({
         label,
         field,
         value,
@@ -2309,7 +2326,7 @@
       `;
       }
 
-                                                                                                function iconLabel(name) {
+      function iconLabel(name) {
         return name
           .split("-")
           .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
@@ -4214,6 +4231,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
       }
 
       bootApp();
-</script>
+    </script>
   </body>
 </html>
