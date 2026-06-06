@@ -605,18 +605,41 @@
         background: rgba(126, 151, 190, 0.12);
       }
 
-      .card-toggle-btn {
+      .card-top-actions {
         position: absolute;
         top: 10px;
         right: 10px;
-        width: 32px;
+        display: flex;
+        gap: 8px;
+        z-index: 2;
+      }
+
+      .card-toggle-btn,
+      .card-open-mini-btn,
+      .card-edit-mini-btn {
         height: 32px;
-        border: 1px solid rgba(138, 159, 255, 0.18);
+        border: 1px solid rgba(138, 159, 255, 0.32);
         border-radius: 9px;
-        background: rgba(19, 34, 58, 0.74);
+        background: linear-gradient(180deg, #344383, #26366f);
         color: white;
         cursor: pointer;
-        z-index: 2;
+      }
+      .card-toggle-btn {
+        width: 32px;
+      }
+
+      .card-open-mini-btn {
+        padding: 0 11px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .card-edit-mini-btn i {
+        width: 15px;
+        height: 15px;
+        display: grid;
+        place-items: center;
       }
 
       .card.expanded .desc {
@@ -1012,16 +1035,16 @@
       }
 
       .copy-block.url-block {
+        min-height: 150px;
         width: 100%;
-        min-height: 74px;
-        grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-rows: auto;
-        align-items: center;
-        gap: 12px;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        align-items: stretch;
+        gap: 10px;
       }
 
       .copy-block.url-block .copy-block-top {
-        display: contents;
+        display: flex;
       }
 
       .copy-block-top,
@@ -1094,6 +1117,7 @@
       .url-preview-stack {
         display: grid;
         gap: 6px;
+        width: 100%;
         min-width: 0;
       }
 
@@ -1119,6 +1143,10 @@
         cursor: text;
         user-select: text;
         font-size: 14px;
+        padding: 12px 14px;
+        border: 1px solid rgba(126, 151, 190, 0.18);
+        border-radius: 9px;
+        background: rgba(5, 15, 28, 0.95);
       }
 
       .copy-preview.collapsed {
@@ -1135,15 +1163,15 @@
       }
 
       .copy-preview.url {
-        min-height: 42px;
-        max-height: 42px;
+        min-height: 52px;
+        max-height: 64px;
         display: inline-flex;
         align-items: center;
         width: 100%;
         min-width: 0;
         color: #dce5ff;
         text-decoration: none;
-        padding: 9px 12px;
+        padding: 12px 14px;
         border: 1px solid rgba(126, 151, 190, 0.18);
         border-radius: 9px;
         background: rgba(5, 15, 28, 0.95);
@@ -1211,6 +1239,23 @@
         z-index: 1;
       }
 
+      .code-edit-wrap.code-collapsed::after {
+        content: "";
+        position: absolute;
+        left: 1px;
+        right: 1px;
+        bottom: 1px;
+        height: 44px;
+        border-radius: 0 0 9px 9px;
+        background: linear-gradient(
+          180deg,
+          rgba(5, 15, 28, 0),
+          rgba(0, 0, 0, 0.92)
+        );
+        pointer-events: none;
+        z-index: 1;
+      }
+
       .code-expand-button {
         position: absolute;
         top: 10px;
@@ -1218,7 +1263,7 @@
         width: 34px;
         height: 34px;
         min-height: 34px;
-        z-index: 2;
+        z-index: 3;
         font-size: 18px;
         font-weight: 800;
       }
@@ -1235,8 +1280,18 @@
 
       .copy-edit-row {
         display: grid;
-        grid-template-columns: 1fr 160px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 14px;
+        width: 100%;
+      }
+
+      .copy-edit-row .field {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .copy-edit-row .field input {
+        width: 100%;
       }
 
       .copy-edit-row.stack-edit-row {
@@ -1245,13 +1300,16 @@
 
       .code-edit-wrap {
         position: relative;
+        width: 100%;
       }
 
       .code-edit-wrap textarea {
+        width: 100%;
         padding-right: 64px;
         font-family:
           ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
           "Liberation Mono", monospace;
+        display: block;
       }
 
       .code-edit-wrap.code-collapsed textarea {
@@ -1863,9 +1921,9 @@
         }
 
         .copy-block-actions {
-          align-items: center;
-          flex-direction: row;
+          margin-left: auto;
           justify-content: flex-end;
+          flex-shrink: 0;
         }
 
         .copy-block.url-block .copy-block-actions {
@@ -1931,12 +1989,12 @@
         <p>Sign in to access your client dashboard.</p>
 
         <div class="field">
-          <label for="username">User</label>
+          <label for="username">Username</label>
           <input
             id="username"
             type="text"
             autocomplete="username"
-            placeholder="User"
+            placeholder="Type 'dev' to login"
             required
           />
         </div>
@@ -1947,7 +2005,7 @@
             id="password"
             type="password"
             autocomplete="current-password"
-            placeholder="Password"
+            placeholder="Type 'password' to login"
             required
           />
         </div>
@@ -2078,7 +2136,7 @@
                 <input
                   id="projectSearch"
                   type="search"
-                  placeholder="Search through projects, clients..."
+                  placeholder="Where did I put that..."
                 />
               </label>
 
@@ -2548,6 +2606,17 @@
         return block.content || block.emptyMessage || "Nothing here boss.";
       }
 
+      function showEmptyUrlMessage(blockId) {
+        const project = activeProject();
+        if (!project) return;
+
+        const block = project.copyBlocks.find((item) => item.id === blockId);
+        if (!block) return;
+
+        block.copied = true;
+        renderProjectDetails();
+      }
+
       function defaultProjects() {
         return [
           {
@@ -2657,9 +2726,13 @@
           ? block.format
           : "text";
 
+        const oldDefaultLabels = ["Text Block", "Code Block", "Copy Block"];
+
         return {
           id: block.id || uid(),
-          label: block.label || "Copy Block",
+          label: oldDefaultLabels.includes(block.label)
+            ? ""
+            : block.label || "",
           content: block.content || "",
           visibleText: block.visibleText || "",
           url: block.url || "",
@@ -3174,8 +3247,16 @@
                     : "";
 
               return `
-        <article class="card ${expandedProjectCardId === project.id ? "expanded" : ""}" data-project-card="${escapeHtml(project.id)}" draggable="true">
-          <button class="card-toggle-btn" type="button" data-card-toggle="${escapeHtml(project.id)}" aria-label="${expandedProjectCardId === project.id ? "Collapse project card" : "Expand project card"}">${expandedProjectCardId === project.id ? "−" : "+"}</button>
+       <article class="card ${expandedProjectCardId === project.id ? "expanded" : ""}" data-project-card="${escapeHtml(project.id)}" draggable="true">
+          <div class="card-top-actions">
+            ${
+              expandedProjectCardId === project.id
+                ? `<button class="card-edit-mini-btn" type="button" data-edit-project="${escapeHtml(project.id)}" aria-label="Edit project">${iconSvg("edit")}</button>`
+                : `<button class="card-open-mini-btn" type="button" data-open-project="${escapeHtml(project.id)}">Open</button>`
+            }
+
+            <button class="card-toggle-btn" type="button" data-card-toggle="${escapeHtml(project.id)}" aria-label="${expandedProjectCardId === project.id ? "Collapse project card" : "Expand project card"}">${expandedProjectCardId === project.id ? "−" : "+"}</button>
+          </div>
            <div class="card-summary">
             <div class="icon-box ${escapeHtml(project.color)}">${iconSvg(project.icon)}</div>
             <div class="card-title-stack">
@@ -3330,7 +3411,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
 
             <div class="field">
               <label>${copyBlockDraft.format === "code" ? "Code" : "Text"}</label>
-              <textarea data-copy-draft-field="content" placeholder="${copyBlockDraft.format === "code" ? "Put yet code here." : "Feed the rectangle."}">${escapeHtml(copyBlockDraft.content)}</textarea>
+              <textarea data-copy-draft-field="content" placeholder="${copyBlockDraft.format === "code" ? "Put yer code here." : "Feed the rectangle."}">${escapeHtml(copyBlockDraft.content)}</textarea>
             </div>
           `
           }
@@ -3380,12 +3461,12 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
 
               <div class="field wide" ${project.task === "Other" ? "" : "hidden"}>
                 <label for="customTask">Custom Task</label>
-                <input id="customTask" type="text" value="${escapeHtml(project.customTask)}" data-project-field="customTask" placeholder="Custom project task" />
+                <input id="customTask" type="text" value="${escapeHtml(project.customTask)}" data-project-field="customTask" placeholder="What am I working on for this project?" />
               </div>
 
               <div class="field wide">
                 <label for="projectDescription">Project Description</label>
-                <textarea id="projectDescription" data-project-field="description" placeholder="Project description">${escapeHtml(project.description)}</textarea>
+                <textarea id="projectDescription" data-project-field="description" placeholder="Write yourself some fancy words to make this feel more professional :>">${escapeHtml(project.description)}</textarea>
               </div>
 
               ${renderAppearanceControls(project)}
@@ -3435,7 +3516,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
                 </a>
               `
               : `
-                <button class="${copyBlockPreviewClass(block)}" type="button" data-command="copy-block" data-block-id="${blockId}">
+                <button class="${copyBlockPreviewClass(block)}" type="button" data-command="empty-url-block" data-block-id="${blockId}">
                   <span>${previewText}</span>
                 </button>
               `
@@ -3448,9 +3529,10 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           }
         </div>
       `
-            : block.label.trim()
-              ? `<div class="copy-block-title">${escapeHtml(block.label)}</div>`
-              : "";
+            : `<div class="copy-block-title">${escapeHtml(
+                block.label.trim() ||
+                  (block.format === "code" ? "Code Block" : "Text Block"),
+              )}</div>`;
 
         return `
     <div class="copy-block-top">
@@ -3474,6 +3556,13 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
       function renderCopyBlockEditor(block) {
         const blockId = escapeHtml(block.id);
         const collapsed = !block.expanded;
+        const labelPlaceholder =
+          block.format === "code" ? "Code Block" : "Text Block";
+        const labelValue = ["Text Block", "Code Block", "Copy Block"].includes(
+          block.label,
+        )
+          ? ""
+          : block.label || "";
 
         if (block.format === "url") {
           return `
@@ -3498,16 +3587,23 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           <div class="copy-edit-row stack-edit-row">
             <div class="field">
               <label>Label</label>
-              <input type="text" value="${escapeHtml(block.label)}" data-block-field="label" data-block-id="${blockId}" placeholder="Block label" />
+              <input type="text" value="${escapeHtml(block.label)}" data-block-field="label" data-block-id="${blockId}" placeholder="${block.format === "code" ? "Put ye code here I say." : "Write something.. I guess"}" />
             </div>
 
-            <div class="field ${block.format === "code" ? `code-edit-wrap ${collapsed ? "code-collapsed" : "code-expanded"}` : ""}">
-              <label>Content</label>
+           <div class="field">
+            <label>Content</label>
 
-              ${block.format === "code" ? renderCodeExpandButton(block) : ""}
-
-              <textarea data-block-field="content" data-block-id="${blockId}" placeholder="Paste reusable content here">${escapeHtml(block.content)}</textarea>
-            </div>
+            ${
+              block.format === "code"
+                ? `
+                  <div class="code-edit-wrap ${block.content.trim() && collapsed ? "code-collapsed" : "code-expanded"}">
+                    ${renderCodeExpandButton(block)}
+                    <textarea data-block-field="content" data-block-id="${blockId}" placeholder="Paste now. Copy later.">${escapeHtml(block.content)}</textarea>
+                  </div>
+                `
+                : `<textarea data-block-field="content" data-block-id="${blockId}" placeholder="Paste now. Copy later.">${escapeHtml(block.content)}</textarea>`
+            }
+          </div>
           </div>
         </div>
       `;
@@ -3524,7 +3620,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
 
         if (block.format === "code") {
           return `
-          <div class="code-preview-wrap ${collapsed ? "code-collapsed" : "code-expanded"}">
+          <div class="code-preview-wrap ${block.content.trim() && collapsed ? "code-collapsed" : "code-expanded"}">
             ${renderCodeExpandButton(block)}
 
             <div class="${copyBlockPreviewClass(block)} code-with-expand" data-block-id="${blockId}">${previewText}</div>
@@ -3656,6 +3752,12 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         projectView.classList.add("active");
         renderProjectDetails();
         projectView.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function openProjectForEditing(projectId) {
+        openProject(projectId);
+        projectInfoOpen = true;
+        renderProjectDetails();
       }
 
       function backToDashboard() {
@@ -3802,8 +3904,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           id: uid(),
           label: isUrl
             ? copyBlockDraft.visibleText || "URL Block"
-            : copyBlockDraft.label ||
-              (format === "code" ? "Code Block" : "Text Block"),
+            : copyBlockDraft.label.trim(),
           content: isUrl ? "" : copyBlockDraft.content,
           visibleText: isUrl ? copyBlockDraft.visibleText : "",
           url: isUrl ? copyBlockDraft.url : "",
@@ -4221,7 +4322,9 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           const addButton = event.target.closest(
             "[data-command='add-project']",
           );
+
           const button = event.target.closest("[data-open-project]");
+          const editButton = event.target.closest("[data-edit-project]");
           const toggleButton = event.target.closest("[data-card-toggle]");
           const card = event.target.closest("[data-project-card]");
 
@@ -4232,6 +4335,11 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
 
           if (button) {
             openProject(button.dataset.openProject);
+            return;
+          }
+
+          if (editButton) {
+            openProjectForEditing(editButton.dataset.editProject);
             return;
           }
 
@@ -4606,6 +4714,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
             moveCopyBlock(blockId, button.dataset.direction);
           if (command === "delete-block") deleteCopyBlock(blockId);
           if (command === "copy-block") copyBlockContent(blockId);
+          if (command === "empty-url-block") showEmptyUrlMessage(blockId);
           if (command === "toggle-top-checklist") toggleTopChecklist();
           if (command === "delete-note-block")
             deleteNoteBlock(button.dataset.noteId);
