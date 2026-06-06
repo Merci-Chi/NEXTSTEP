@@ -2048,6 +2048,7 @@
             <span data-icon="settings"></span>
             Settings
           </button>
+        </nav>
 
         <div class="profile">
           <div class="avatar" id="userAvatar">DV</div>
@@ -2072,9 +2073,6 @@
             </div>
 
             <div class="tools">
-              <button class="small-btn" id="dashboardEditBtn" type="button">
-                Edit Projects
-              </button>
               <label class="search">
                 <span data-icon="search"></span>
                 <input
@@ -2318,7 +2316,6 @@
       const projectView = document.getElementById("projectView");
       const projectGrid = document.getElementById("projectGrid");
       const projectSearch = document.getElementById("projectSearch");
-      const dashboardEditBtn = document.getElementById("dashboardEditBtn");
 
       let projects = loadProjects();
       let activeProjectId = null;
@@ -2327,7 +2324,6 @@
       let iconPickerCategory = "recents";
       let iconPickerPage = 0;
       let activeAppearancePanel = "";
-      let dashboardEditing = false;
       let expandedNoteId = null;
       let expandedProjectCardId = "";
       let draggedProjectId = "";
@@ -2543,23 +2539,6 @@
 
         return messages[emptyTextOrCodeBlockCount] || "Okay then.";
       }
-      function emptyCopyBlockMessage(project) {
-        const messages = [
-          "Nothing here boss.",
-          "You gonna write something?",
-          "Uhm..",
-          "Wow you just like leaving things empty huh?",
-        ];
-
-        const emptyTextOrCodeBlockCount = project.copyBlocks.filter((block) => {
-          return (
-            (block.format === "text" || block.format === "code") &&
-            !block.content.trim()
-          );
-        }).length;
-
-        return messages[emptyTextOrCodeBlockCount] || "Okay then.";
-      }
 
       function copyBlockPreviewText(block) {
         if (block.format === "url") {
@@ -2749,17 +2728,19 @@
       }
 
       function projectStorageSnapshot(selectedProjects) {
-  return {
-    app: "ClientFlow",
-    type: "clientflow-project-backup",
-    version: 1,
-    exportedAt: new Date().toISOString(),
-    projects: selectedProjects.map((project) => ({
-      ...project,
-      copyBlocks: project.copyBlocks.map(({ copied, editing, ...block }) => block),
-    })),
-  };
-}
+        return {
+          app: "ClientFlow",
+          type: "clientflow-project-backup",
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          projects: selectedProjects.map((project) => ({
+            ...project,
+            copyBlocks: project.copyBlocks.map(
+              ({ copied, editing, ...block }) => block,
+            ),
+          })),
+        };
+      }
 
       function settingsSelectedProjectIds(kind = "export") {
         return Array.from(
@@ -2967,7 +2948,10 @@
           );
 
           if (existingIndex >= 0) {
-            projects[existingIndex] = cleanProject(incomingProject, projects[existingIndex]);
+            projects[existingIndex] = cleanProject(
+              incomingProject,
+              projects[existingIndex],
+            );
           } else {
             projects.push(cleanProject(incomingProject, {}));
           }
@@ -3192,8 +3176,7 @@
               return `
         <article class="card ${expandedProjectCardId === project.id ? "expanded" : ""}" data-project-card="${escapeHtml(project.id)}" draggable="true">
           <button class="card-toggle-btn" type="button" data-card-toggle="${escapeHtml(project.id)}" aria-label="${expandedProjectCardId === project.id ? "Collapse project card" : "Expand project card"}">${expandedProjectCardId === project.id ? "−" : "+"}</button>
-          ${dashboardEditing ? `<button class="small-btn danger card-delete-btn" type="button" data-delete-project="${escapeHtml(project.id)}" aria-label="Delete project">${iconSvg("trash")}</button>` : ""}
-          <div class="card-summary">
+           <div class="card-summary">
             <div class="icon-box ${escapeHtml(project.color)}">${iconSvg(project.icon)}</div>
             <div class="card-title-stack">
               <h2 class="${titleClass}">${escapeHtml(project.title)}</h2>
@@ -3216,10 +3199,6 @@
           <span class="add-project-plus">${iconSvg("plus")}</span>
         </button>
       `;
-
-        dashboardEditBtn.textContent = dashboardEditing
-          ? "Done Editing"
-          : "Edit Projects";
       }
 
       function renderProjectDetails() {
@@ -3711,23 +3690,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         saveProjects();
         renderDashboardProjectCards();
         openProject(project.id);
-      }
-
-      function deleteProject(projectId) {
-        const index = projects.findIndex((project) => project.id === projectId);
-        if (index < 0) return;
-
-        projects.splice(index, 1);
-        saveProjects();
-
-        if (activeProjectId === projectId) {
-          projectInfoOpen = false;
-          expandedNoteId = null;
-          backToDashboard();
-          return;
-        }
-
-        renderDashboardProjectCards();
       }
 
       function moveProject(sourceId, targetId, afterTarget = false) {
@@ -4255,27 +4217,16 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
       function bindDashboardEvents() {
         projectSearch.addEventListener("input", renderDashboardProjectCards);
 
-        dashboardEditBtn.addEventListener("click", () => {
-          dashboardEditing = !dashboardEditing;
-          renderDashboardProjectCards();
-        });
-
         projectGrid.addEventListener("click", (event) => {
           const addButton = event.target.closest(
             "[data-command='add-project']",
           );
-          const deleteButton = event.target.closest("[data-delete-project]");
           const button = event.target.closest("[data-open-project]");
           const toggleButton = event.target.closest("[data-card-toggle]");
           const card = event.target.closest("[data-project-card]");
 
           if (addButton) {
             addProject();
-            return;
-          }
-
-          if (deleteButton) {
-            deleteProject(deleteButton.dataset.deleteProject);
             return;
           }
 
@@ -4287,8 +4238,10 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           if (toggleButton || card) {
             const projectId =
               toggleButton?.dataset.cardToggle || card.dataset.projectCard;
+
             expandedProjectCardId =
               expandedProjectCardId === projectId ? "" : projectId;
+
             renderDashboardProjectCards();
           }
         });
@@ -4304,16 +4257,20 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
 
         projectGrid.addEventListener("dragover", (event) => {
           const card = event.target.closest("[data-project-card]");
+
           if (
             !card ||
             !draggedProjectId ||
             card.dataset.projectCard === draggedProjectId
-          )
+          ) {
             return;
+          }
 
           event.preventDefault();
+
           const rect = card.getBoundingClientRect();
           const after = event.clientX > rect.left + rect.width / 2;
+
           card.classList.toggle("drop-before", !after);
           card.classList.toggle("drop-after", after);
         });
@@ -4330,6 +4287,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           if (!card || !draggedProjectId) return;
 
           event.preventDefault();
+
           const after = card.classList.contains("drop-after");
           moveProject(draggedProjectId, card.dataset.projectCard, after);
           draggedProjectId = "";
@@ -4337,12 +4295,14 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
 
         projectGrid.addEventListener("dragend", () => {
           draggedProjectId = "";
+
           projectGrid
             .querySelectorAll(".dragging, .drop-before, .drop-after")
             .forEach((element) => {
               element.classList.remove("dragging", "drop-before", "drop-after");
             });
         });
+
         document.addEventListener("click", (event) => {
           const button = event.target.closest("[data-command]");
           if (!button) return;
@@ -4395,6 +4355,57 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           }
         });
       }
+      document.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-command]");
+        if (!button) return;
+
+        const command = button.dataset.command;
+
+        if (command === "open-settings") {
+          openSettings();
+        }
+
+        if (command === "close-settings") {
+          closeSettings();
+        }
+
+        if (command === "settings-export-selected") {
+          exportSelectedProjects();
+        }
+
+        if (command === "settings-import-selected") {
+          importSelectedProjects();
+        }
+
+        if (command === "settings-select-all-export") {
+          document
+            .querySelectorAll("[data-settings-export-project]")
+            .forEach((input) => {
+              input.checked = true;
+            });
+        }
+
+        if (command === "settings-select-all-import") {
+          document
+            .querySelectorAll("[data-settings-import-project]")
+            .forEach((input) => {
+              input.checked = true;
+            });
+        }
+      });
+
+      document.addEventListener("change", (event) => {
+        if (event.target.matches("[data-settings-import-file]")) {
+          previewImportFile(event.target.files?.[0]);
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        const modal = event.target.closest("[data-modal='settings']");
+        if (event.target === modal) {
+          closeSettings();
+        }
+      });
 
       function bindProjectEvents() {
         projectView.addEventListener("input", (event) => {
@@ -4540,8 +4551,6 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           if (command === "open-project-info") openProjectInfo();
           if (command === "close-project-info") closeProjectInfo();
           if (command === "close-appearance-popup") closeAppearancePopup();
-          if (command === "delete-active-project")
-            deleteProject(activeProjectId);
           if (command === "toggle-menu") {
             activeCustomMenu =
               activeCustomMenu === button.dataset.menu
