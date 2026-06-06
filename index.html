@@ -1091,6 +1091,23 @@
         text-align: right;
       }
 
+      .url-preview-stack {
+        display: grid;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .url-empty-popup {
+        width: fit-content;
+        padding: 6px 10px;
+        border: 1px solid rgba(86, 223, 154, 0.28);
+        border-radius: 999px;
+        background: rgba(86, 223, 154, 0.08);
+        color: var(--green);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
       .copy-preview {
         min-height: 52px;
         max-height: 64px;
@@ -1165,6 +1182,12 @@
 
       .copy-preview.code.code-with-expand {
         padding-right: 64px;
+      }
+
+      button.copy-preview.url {
+        font: inherit;
+        cursor: pointer;
+        text-align: left;
       }
 
       .code-preview-wrap {
@@ -1414,6 +1437,49 @@
 
       .modal.open {
         display: grid;
+      }
+
+      .settings-project-list {
+        display: grid;
+        gap: 9px;
+        max-height: 260px;
+        overflow: auto;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: rgba(5, 15, 28, 0.62);
+      }
+
+      .settings-project-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 42px;
+        padding: 8px 10px;
+        border: 1px solid rgba(126, 151, 190, 0.16);
+        border-radius: 9px;
+        background: rgba(19, 34, 58, 0.55);
+        color: #dce5ff;
+        cursor: pointer;
+      }
+
+      .settings-project-row input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--blue);
+      }
+
+      .settings-note {
+        color: var(--muted);
+        line-height: 1.45;
+        margin: 0;
+      }
+
+      .settings-message {
+        min-height: 22px;
+        color: var(--green);
+        font-size: 13px;
+        font-weight: 700;
       }
 
       .sheet {
@@ -1978,11 +2044,10 @@
             Reports
           </button>
 
-          <button class="nav-item">
+          <button class="nav-item" type="button" data-command="open-settings">
             <span data-icon="settings"></span>
             Settings
           </button>
-        </nav>
 
         <div class="profile">
           <div class="avatar" id="userAvatar">DV</div>
@@ -2272,6 +2337,9 @@
       let saveMessageTimer = null;
       let copyBlockPopupOpen = false;
       let copyBlockDraft = defaultCopyBlockDraft();
+      let settingsOpen = false;
+      let settingsMessage = "";
+      let importPreviewProjects = [];
 
       function uid() {
         return `id-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -2458,12 +2526,47 @@
           .join(" ");
       }
 
+      function emptyCopyBlockMessage(project) {
+        const messages = [
+          "Nothing here boss.",
+          "You gonna write something?",
+          "Uhm..",
+          "Wow you just like leaving things empty huh?",
+        ];
+
+        const emptyTextOrCodeBlockCount = project.copyBlocks.filter((block) => {
+          return (
+            (block.format === "text" || block.format === "code") &&
+            !block.content.trim()
+          );
+        }).length;
+
+        return messages[emptyTextOrCodeBlockCount] || "Okay then.";
+      }
+      function emptyCopyBlockMessage(project) {
+        const messages = [
+          "Nothing here boss.",
+          "You gonna write something?",
+          "Uhm..",
+          "Wow you just like leaving things empty huh?",
+        ];
+
+        const emptyTextOrCodeBlockCount = project.copyBlocks.filter((block) => {
+          return (
+            (block.format === "text" || block.format === "code") &&
+            !block.content.trim()
+          );
+        }).length;
+
+        return messages[emptyTextOrCodeBlockCount] || "Okay then.";
+      }
+
       function copyBlockPreviewText(block) {
         if (block.format === "url") {
-          return block.visibleText || "Empty URL block.";
+          return block.visibleText || "Link to nothing.";
         }
 
-        return block.content || "Empty copy block.";
+        return block.content || block.emptyMessage || "Nothing here boss.";
       }
 
       function defaultProjects() {
@@ -2645,6 +2748,242 @@
         showSaveState();
       }
 
+      function projectStorageSnapshot(selectedProjects) {
+  return {
+    app: "ClientFlow",
+    type: "clientflow-project-backup",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    projects: selectedProjects.map((project) => ({
+      ...project,
+      copyBlocks: project.copyBlocks.map(({ copied, editing, ...block }) => block),
+    })),
+  };
+}
+
+      function settingsSelectedProjectIds(kind = "export") {
+        return Array.from(
+          document.querySelectorAll(`[data-settings-${kind}-project]:checked`),
+        ).map((input) => input.value);
+      }
+
+      function downloadTextFile(filename, text) {
+        const blob = new Blob([text], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+      }
+
+      function openSettings() {
+        settingsOpen = true;
+        settingsMessage = "";
+        importPreviewProjects = [];
+        renderSettingsModal();
+      }
+
+      function closeSettings() {
+        settingsOpen = false;
+        settingsMessage = "";
+        importPreviewProjects = [];
+        renderSettingsModal();
+      }
+
+      function renderSettingsModal() {
+        document.getElementById("settingsModal")?.remove();
+
+        if (!settingsOpen) return;
+
+        const modal = document.createElement("div");
+        modal.id = "settingsModal";
+        modal.className = "modal open";
+        modal.dataset.modal = "settings";
+
+        modal.innerHTML = `
+          <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+            <div class="sheet-head">
+              <h2 id="settingsTitle">Settings</h2>
+              <button class="small-btn" type="button" data-command="close-settings">
+                ${iconSvg("xmark")} Close
+              </button>
+            </div>
+
+            <div class="copy-section">
+              <div class="project-panel">
+                <h2>Export Project Backup</h2>
+                <p class="settings-note">
+                  Pick which projects you want to save, then download them as a backup file.
+                </p>
+
+                <div class="settings-project-list">
+                  ${projects
+                    .map(
+                      (project) => `
+                      <label class="settings-project-row">
+                        <input type="checkbox" data-settings-export-project value="${escapeHtml(project.id)}" checked />
+                        <span>${escapeHtml(project.title)}</span>
+                      </label>
+                    `,
+                    )
+                    .join("")}
+                </div>
+
+                <div class="copy-block-actions">
+                  <button class="small-btn" type="button" data-command="settings-select-all-export">
+                    ${iconSvg("check")} Select All
+                  </button>
+                  <button class="small-btn" type="button" data-command="settings-export-selected">
+                    ${iconSvg("download")} Export Selected
+                  </button>
+                </div>
+              </div>
+
+              <div class="project-panel">
+                <h2>Import Project Backup</h2>
+                <p class="settings-note">
+                  Choose a ClientFlow backup file, select the projects you want, then import them.
+                  Projects with the same ID will be replaced.
+                </p>
+
+                <div class="field">
+                  <label for="settingsImportFile">Backup File</label>
+                  <input id="settingsImportFile" type="file" accept="application/json,.json" data-settings-import-file />
+                </div>
+
+                ${
+                  importPreviewProjects.length
+                    ? `
+                    <div class="settings-project-list">
+                      ${importPreviewProjects
+                        .map(
+                          (project) => `
+                          <label class="settings-project-row">
+                            <input type="checkbox" data-settings-import-project value="${escapeHtml(project.id)}" checked />
+                            <span>${escapeHtml(project.title || "Untitled Project")}</span>
+                          </label>
+                        `,
+                        )
+                        .join("")}
+                    </div>
+
+                    <div class="copy-block-actions">
+                      <button class="small-btn" type="button" data-command="settings-select-all-import">
+                        ${iconSvg("check")} Select All
+                      </button>
+                      <button class="small-btn" type="button" data-command="settings-import-selected">
+                        ${iconSvg("upload")} Import Selected
+                      </button>
+                    </div>
+                  `
+                    : ""
+                }
+
+                <div class="settings-message">${escapeHtml(settingsMessage)}</div>
+              </div>
+            </div>
+          </section>
+        `;
+
+        document.body.appendChild(modal);
+      }
+
+      function exportSelectedProjects() {
+        const selectedIds = settingsSelectedProjectIds("export");
+        const selectedProjects = projects.filter((project) =>
+          selectedIds.includes(project.id),
+        );
+
+        if (!selectedProjects.length) {
+          settingsMessage = "Pick at least one project to export.";
+          renderSettingsModal();
+          return;
+        }
+
+        const backup = projectStorageSnapshot(selectedProjects);
+        const date = new Date().toISOString().slice(0, 10);
+
+        downloadTextFile(
+          `clientflow-projects-${date}.json`,
+          JSON.stringify(backup, null, 2),
+        );
+
+        settingsMessage = `Exported ${selectedProjects.length} project${selectedProjects.length === 1 ? "" : "s"}.`;
+        renderSettingsModal();
+      }
+
+      async function previewImportFile(file) {
+        if (!file) return;
+
+        try {
+          const text = await file.text();
+          const parsed = JSON.parse(text);
+          const importedProjects = Array.isArray(parsed)
+            ? parsed
+            : Array.isArray(parsed.projects)
+              ? parsed.projects
+              : [];
+
+          if (!importedProjects.length) {
+            importPreviewProjects = [];
+            settingsMessage = "That file does not have any projects in it.";
+            renderSettingsModal();
+            return;
+          }
+
+          importPreviewProjects = importedProjects.map((project, index) =>
+            cleanProject(project, defaultProjects()[index] || {}),
+          );
+
+          settingsMessage = `Found ${importPreviewProjects.length} project${importPreviewProjects.length === 1 ? "" : "s"} in this backup.`;
+          renderSettingsModal();
+        } catch (error) {
+          importPreviewProjects = [];
+          settingsMessage = "Could not read that backup file.";
+          renderSettingsModal();
+        }
+      }
+
+      function importSelectedProjects() {
+        const selectedIds = settingsSelectedProjectIds("import");
+        const selectedProjects = importPreviewProjects.filter((project) =>
+          selectedIds.includes(project.id),
+        );
+
+        if (!selectedProjects.length) {
+          settingsMessage = "Pick at least one project to import.";
+          renderSettingsModal();
+          return;
+        }
+
+        selectedProjects.forEach((incomingProject) => {
+          const existingIndex = projects.findIndex(
+            (project) => project.id === incomingProject.id,
+          );
+
+          if (existingIndex >= 0) {
+            projects[existingIndex] = cleanProject(incomingProject, projects[existingIndex]);
+          } else {
+            projects.push(cleanProject(incomingProject, {}));
+          }
+        });
+
+        saveProjects();
+        renderDashboardProjectCards();
+
+        if (activeProjectId && !findProject(activeProjectId)) {
+          backToDashboard();
+        }
+
+        settingsMessage = `Imported ${selectedProjects.length} project${selectedProjects.length === 1 ? "" : "s"}.`;
+        importPreviewProjects = [];
+        renderSettingsModal();
+      }
       function showSaveState() {
         const state = document.getElementById("saveState");
         if (!state) return;
@@ -3091,7 +3430,9 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         }
 
         return `
-        <span class="copy-confirm">${block.copied ? "Copied!" : ""}</span>
+        <span class="copy-confirm">
+          ${block.copied && !(block.format === "url" && !block.url.trim()) ? "Copied!" : ""}
+        </span>
         <button class="copy-button" type="button" data-command="copy-block" data-block-id="${blockId}" aria-label="Copy block">${iconSvg("copy")}</button>
         <button class="small-btn block-icon-button" type="button" data-command="edit-block" data-block-id="${blockId}" aria-label="Edit copy block">${iconSvg("edit")}</button>
         <button class="small-btn danger block-icon-button" type="button" data-command="delete-block" data-block-id="${blockId}" aria-label="Delete block">${iconSvg("trash")}</button>
@@ -3101,27 +3442,46 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
       function renderCopyBlockHeader(block, index, totalBlocks) {
         const blockId = escapeHtml(block.id);
         const previewText = escapeHtml(copyBlockPreviewText(block));
+        const hasUrl = block.format === "url" && block.url.trim();
 
         const titleMarkup =
           block.format === "url"
             ? `
-          <a class="${copyBlockPreviewClass(block)}" href="${escapeHtml(block.url || "#")}" target="_blank" rel="noopener noreferrer" data-block-id="${blockId}">
-            <span>${previewText}</span>
-          </a>
-        `
+        <div class="url-preview-stack">
+          ${
+            hasUrl
+              ? `
+                <a class="${copyBlockPreviewClass(block)}" href="${escapeHtml(block.url)}" target="_blank" rel="noopener noreferrer" data-block-id="${blockId}">
+                  <span>${previewText}</span>
+                </a>
+              `
+              : `
+                <button class="${copyBlockPreviewClass(block)}" type="button" data-command="copy-block" data-block-id="${blockId}">
+                  <span>${previewText}</span>
+                </button>
+              `
+          }
+
+          ${
+            block.copied && !block.url.trim()
+              ? `<div class="url-empty-popup">Just like I said. Add a url :></div>`
+              : ""
+          }
+        </div>
+      `
             : block.label.trim()
               ? `<div class="copy-block-title">${escapeHtml(block.label)}</div>`
               : "";
 
         return `
-        <div class="copy-block-top">
-          ${titleMarkup}
+    <div class="copy-block-top">
+      ${titleMarkup}
 
-          <div class="copy-block-actions">
-            ${renderCopyBlockActions(block, index, totalBlocks)}
-          </div>
-        </div>
-      `;
+      <div class="copy-block-actions">
+        ${renderCopyBlockActions(block, index, totalBlocks)}
+      </div>
+    </div>
+  `;
       }
 
       function renderCodeExpandButton(block) {
@@ -3469,9 +3829,12 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         copyBlockDraft[field] = value;
       }
 
-      function buildCopyBlockFromDraft() {
+      function buildCopyBlockFromDraft(project) {
         const format = normalizeCopyBlockFormat(copyBlockDraft.format);
         const isUrl = format === "url";
+        const isEmptyTextOrCode =
+          (format === "text" || format === "code") &&
+          !copyBlockDraft.content.trim();
 
         return {
           id: uid(),
@@ -3483,6 +3846,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           visibleText: isUrl ? copyBlockDraft.visibleText : "",
           url: isUrl ? copyBlockDraft.url : "",
           format,
+          emptyMessage: isEmptyTextOrCode ? emptyCopyBlockMessage(project) : "",
           expanded: false,
           editing: false,
           copied: false,
@@ -3493,7 +3857,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         const project = findProject(activeProjectId);
         if (!project) return;
 
-        project.copyBlocks.unshift(buildCopyBlockFromDraft());
+        project.copyBlocks.unshift(buildCopyBlockFromDraft(project));
 
         copyBlockPopupOpen = false;
         copyBlockDraft = defaultCopyBlockDraft();
@@ -3608,7 +3972,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         window.setTimeout(() => {
           block.copied = false;
           if (activeProjectId === project.id) renderProjectDetails();
-        }, 1200);
+        }, 3000);
       }
 
       function toggleTopChecklist() {
@@ -3978,6 +4342,57 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
             .forEach((element) => {
               element.classList.remove("dragging", "drop-before", "drop-after");
             });
+        });
+        document.addEventListener("click", (event) => {
+          const button = event.target.closest("[data-command]");
+          if (!button) return;
+
+          const command = button.dataset.command;
+
+          if (command === "open-settings") {
+            openSettings();
+          }
+
+          if (command === "close-settings") {
+            closeSettings();
+          }
+
+          if (command === "settings-export-selected") {
+            exportSelectedProjects();
+          }
+
+          if (command === "settings-import-selected") {
+            importSelectedProjects();
+          }
+
+          if (command === "settings-select-all-export") {
+            document
+              .querySelectorAll("[data-settings-export-project]")
+              .forEach((input) => {
+                input.checked = true;
+              });
+          }
+
+          if (command === "settings-select-all-import") {
+            document
+              .querySelectorAll("[data-settings-import-project]")
+              .forEach((input) => {
+                input.checked = true;
+              });
+          }
+        });
+
+        document.addEventListener("change", (event) => {
+          if (event.target.matches("[data-settings-import-file]")) {
+            previewImportFile(event.target.files?.[0]);
+          }
+        });
+
+        document.addEventListener("click", (event) => {
+          const modal = event.target.closest("[data-modal='settings']");
+          if (event.target === modal) {
+            closeSettings();
+          }
         });
       }
 
