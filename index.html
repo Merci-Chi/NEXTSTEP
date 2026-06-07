@@ -423,6 +423,33 @@
         color: #9da8ba;
       }
 
+      .top-add-project-btn {
+        width: 52px;
+        height: 52px;
+        border: 1px solid rgba(138, 159, 255, 0.18);
+        border-radius: 9px;
+        background: linear-gradient(180deg, #344383, #26366f);
+        color: white;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        transition: 0.2s ease;
+        flex: 0 0 auto;
+      }
+
+      .top-add-project-btn:hover {
+        background: linear-gradient(180deg, #40519a, #304182);
+        transform: translateY(-1px);
+      }
+
+      .top-add-project-btn svg,
+      .top-add-project-btn i {
+        width: 20px;
+        height: 20px;
+        display: grid;
+        place-items: center;
+      }
+
       .bell {
         position: relative;
         color: #cfd7e7;
@@ -531,11 +558,25 @@
 
       .card h2 {
         margin: 0;
-        font-size: clamp(17px, 1.55vw, 22px);
+        max-width: 100%;
+        font-size: clamp(16px, 1.35vw, 21px);
         letter-spacing: -0.03em;
         line-height: 1.14;
         text-align: left;
         overflow-wrap: anywhere;
+        word-break: break-word;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .card.expanded h2 {
+        display: block;
+        max-width: 100%;
+        overflow: visible;
+        word-break: break-word;
       }
 
       .card h2.long-title {
@@ -581,11 +622,11 @@
 
       .card-summary {
         display: grid;
-        grid-template-columns: 64px 1fr;
+        grid-template-columns: 64px minmax(0, 1fr);
         align-items: center;
         gap: 14px;
         min-height: 66px;
-        padding-right: 38px;
+        padding-right: 132px;
       }
 
       .card-summary .icon-box {
@@ -597,6 +638,7 @@
         justify-items: start;
         gap: 6px;
         min-width: 0;
+        max-width: 100%;
       }
 
       .card-divider {
@@ -658,6 +700,8 @@
       .card.expanded .card-summary {
         display: block;
         min-height: 0;
+        padding-right: 0;
+        padding-top: 36px;
       }
 
       .card.expanded .card-title-stack {
@@ -697,6 +741,16 @@
         color: #dce5ff;
       }
 
+      .card-edit-mini-btn.danger {
+        border-color: rgba(255, 61, 85, 0.25);
+        background: rgba(255, 61, 85, 0.12);
+        color: #ff9aa6;
+      }
+
+      .card-edit-mini-btn.danger:hover {
+        background: rgba(255, 61, 85, 0.2);
+      }
+
       .dot {
         width: 12px;
         height: 12px;
@@ -718,6 +772,25 @@
       }
       .dot.danger {
         background: var(--danger);
+      }
+      .dot.orange {
+        background: #ff9a52;
+      }
+      .dot.teal {
+        background: #2dd4bf;
+      }
+
+      .status.assign-status {
+        color: #ffffff;
+        background: rgba(160, 170, 190, 0.12);
+        border-color: rgba(255, 255, 255, 0.28);
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+        text-decoration-color: #ffffff;
+      }
+
+      .status.assign-status .dot {
+        background: #8b95a7;
       }
 
       .open-btn {
@@ -956,13 +1029,26 @@
           ),
           var(--panel);
         box-shadow: var(--shadow);
-        padding: 26px;
+        padding: clamp(18px, 2vw, 26px);
       }
 
       .project-form-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(240px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 16px;
+        align-items: start;
+      }
+
+      .project-form-grid .wide {
+        grid-column: 1 / -1;
+      }
+
+      .project-form-grid .field {
+        margin-bottom: 0;
+      }
+
+      .project-form-grid textarea {
+        min-height: 96px;
       }
 
       .project-form-grid .wide {
@@ -2131,6 +2217,15 @@
             </div>
 
             <div class="tools">
+              <button
+                class="top-add-project-btn"
+                type="button"
+                data-command="add-project"
+                aria-label="Add project"
+              >
+                <span data-icon="plus"></span>
+              </button>
+
               <label class="search">
                 <span data-icon="search"></span>
                 <input
@@ -2169,16 +2264,20 @@
         "Membership Portal",
         "Other",
       ];
+
       const STATUS_OPTIONS = [
-        "In Progress",
+        "Pending",
+        "Not started",
+        "In progress",
         "Review",
         "Active",
-        "Drafting",
-        "Pending",
-        "Reschedule",
-        "Cancel",
-        "Finished",
+        "Completed",
+        "Cancelled",
+        "Archived",
       ];
+
+      const STATUS_SORT_ORDER = ["", ...STATUS_OPTIONS];
+
       const ICON_CATEGORIES = [
         { id: "recents", label: "Recents", icon: "clock-rotate-left" },
         { id: "tasks", label: "Tasks", icon: "list-check" },
@@ -2336,9 +2435,11 @@
           "rocket",
         ],
       };
+
       const ICON_OPTIONS = Object.values(ICON_GROUPS)
         .flat()
         .map((icon) => `solid:${icon}`);
+
       const COLOR_OPTIONS = [
         { id: "blue", label: "Blue", value: "#6b91ff" },
         { id: "purple", label: "Purple", value: "#a985ff" },
@@ -2350,15 +2451,16 @@
         { id: "red", label: "Red", value: "#ff3d55" },
         { id: "white", label: "White", value: "#ffffff" },
       ];
+
       const STATUS_DOT_CLASS = {
-        "In Progress": "",
-        Review: "yellow",
-        Active: "green",
-        Drafting: "purple",
-        Pending: "cyan",
-        Reschedule: "yellow",
-        Cancel: "danger",
-        Finished: "green",
+        Pending: "yellow",
+        "Not started": "cyan",
+        "In progress": "",
+        Review: "orange",
+        Active: "teal",
+        Completed: "green",
+        Cancelled: "danger",
+        Archived: "purple",
       };
 
       const loginForm = document.getElementById("loginForm");
@@ -2394,6 +2496,7 @@
       let settingsOpen = false;
       let settingsMessage = "";
       let importPreviewProjects = [];
+      let dashboardEditingProjectId = "";
 
       function uid() {
         return `id-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -2532,11 +2635,17 @@
       }
 
       function dotHtml(status) {
+        if (!status) {
+          return `<span class="dot"></span>`;
+        }
+
         const dotClass = STATUS_DOT_CLASS[status] || "";
         return `<span class="dot ${dotClass}"></span>`;
       }
 
       function statusDotStyle(status) {
+        if (!status) return "#8b95a7";
+
         const dotClass = STATUS_DOT_CLASS[status] || "";
         const colorMap = {
           yellow: "var(--yellow)",
@@ -2544,6 +2653,8 @@
           cyan: "#62c6d7",
           green: "#66d48a",
           danger: "var(--danger)",
+          orange: "#ff9a52",
+          teal: "#2dd4bf",
         };
 
         return colorMap[dotClass] || "var(--blue)";
@@ -2672,7 +2783,7 @@
             customTask: "",
             description:
               "Client dashboard, class schedule, and sign-up experience.",
-            status: "Pending",
+            status: "",
             icon: "dumbbell",
             color: "purple",
             copyBlocks: [],
@@ -2695,15 +2806,25 @@
       function cleanProject(project, fallback) {
         const cleaned = { ...fallback, ...project };
         cleaned.id = cleaned.id || uid();
-        cleaned.title = cleaned.title || "Untitled Project";
+        cleaned.title = cleaned.title ?? "";
         cleaned.task = TASK_OPTIONS.includes(cleaned.task)
           ? cleaned.task
           : "Other";
         cleaned.customTask = cleaned.customTask || "";
         cleaned.description = cleaned.description || "";
+        const legacyStatusMap = {
+          "In Progress": "In progress",
+          Drafting: "Not started",
+          Reschedule: "Pending",
+          Cancel: "Cancelled",
+          Finished: "Completed",
+        };
+
+        cleaned.status =
+          legacyStatusMap[cleaned.status] || cleaned.status || "";
         cleaned.status = STATUS_OPTIONS.includes(cleaned.status)
           ? cleaned.status
-          : "Pending";
+          : "";
         cleaned.icon = ICON_OPTIONS.includes(normalizeIconValue(cleaned.icon))
           ? normalizeIconValue(cleaned.icon)
           : "solid:file-lines";
@@ -3230,11 +3351,18 @@
 
       function renderDashboardProjectCards() {
         const query = projectSearch.value.trim().toLowerCase();
-        const visibleProjects = projects.filter((project) => {
-          const haystack =
-            `${project.title} ${taskLabel(project)} ${project.description} ${project.status}`.toLowerCase();
-          return haystack.includes(query);
-        });
+        const visibleProjects = projects
+          .filter((project) => {
+            const haystack =
+              `${project.title} ${taskLabel(project)} ${project.description} ${project.status || "Assign"}`.toLowerCase();
+            return haystack.includes(query);
+          })
+          .sort((a, b) => {
+            return (
+              STATUS_SORT_ORDER.indexOf(a.status || "") -
+              STATUS_SORT_ORDER.indexOf(b.status || "")
+            );
+          });
 
         projectGrid.innerHTML =
           visibleProjects
@@ -3249,14 +3377,17 @@
               return `
        <article class="card ${expandedProjectCardId === project.id ? "expanded" : ""}" data-project-card="${escapeHtml(project.id)}" draggable="true">
           <div class="card-top-actions">
-            ${
-              expandedProjectCardId === project.id
-                ? `<button class="card-edit-mini-btn" type="button" data-edit-project="${escapeHtml(project.id)}" aria-label="Edit project">${iconSvg("edit")}</button>`
-                : `<button class="card-open-mini-btn" type="button" data-open-project="${escapeHtml(project.id)}">Open</button>`
-            }
+  ${
+    expandedProjectCardId === project.id
+      ? `
+        <button class="card-edit-mini-btn" type="button" data-edit-project="${escapeHtml(project.id)}" aria-label="Edit project">${iconSvg("edit")}</button>
+        <button class="card-edit-mini-btn danger" type="button" data-delete-project="${escapeHtml(project.id)}" aria-label="Delete project">${iconSvg("trash")}</button>
+      `
+      : `<button class="card-open-mini-btn" type="button" data-open-project="${escapeHtml(project.id)}">Open</button>`
+  }
 
-            <button class="card-toggle-btn" type="button" data-card-toggle="${escapeHtml(project.id)}" aria-label="${expandedProjectCardId === project.id ? "Collapse project card" : "Expand project card"}">${expandedProjectCardId === project.id ? "−" : "+"}</button>
-          </div>
+  <button class="card-toggle-btn" type="button" data-card-toggle="${escapeHtml(project.id)}" aria-label="${expandedProjectCardId === project.id ? "Collapse project card" : "Expand project card"}">${expandedProjectCardId === project.id ? "−" : "+"}</button>
+</div>
            <div class="card-summary">
             <div class="icon-box ${escapeHtml(project.color)}">${iconSvg(project.icon)}</div>
             <div class="card-title-stack">
@@ -3266,11 +3397,15 @@
           </div>
           <div class="card-divider"></div>
           <p class="desc ${project.description.length > 92 ? "overflowing" : ""}">${escapeHtml(project.description)}</p>
-          <div class="status">
-  ${dotHtml(project.status)}
-  ${escapeHtml(project.status)}
-</div>
-          ${expandedProjectCardId === project.id ? `<button class="open-btn" type="button" data-open-project="${escapeHtml(project.id)}">Open Project</button>` : ""}
+          <div class="status ${project.status ? "" : "assign-status"}">
+            ${dotHtml(project.status)}
+            <span>${escapeHtml(project.status || "Assign")}</span>
+          </div>
+          ${
+            expandedProjectCardId === project.id
+              ? `<button class="open-btn" type="button" data-open-project="${escapeHtml(project.id)}">Open Project</button>`
+              : ""
+          }
         </article>
       `;
             })
@@ -3436,6 +3571,17 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
             </div>
 
             <div class="project-form-grid">
+              <div class="field wide">
+                <label for="projectTitleField">Title</label>
+                <input
+                  id="projectTitleField"
+                  type="text"
+                  value="${escapeHtml(project.title)}"
+                  data-project-field="title"
+                  placeholder="Project title"
+                />
+              </div>
+
               ${renderMenuControl({
                 label: "Current Task",
                 field: "task",
@@ -3775,11 +3921,11 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         const project = cleanProject(
           {
             id: uid(),
-            title: "New Project",
+            title: "",
             task: "Other",
             customTask: "",
             description: "",
-            status: "Pending",
+            status: "",
             icon: "file",
             color: "white",
             copyBlocks: [],
@@ -3791,7 +3937,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         projects.push(project);
         saveProjects();
         renderDashboardProjectCards();
-        openProject(project.id);
+        toggleDashboardProjectEdit(project.id);
       }
 
       function moveProject(sourceId, targetId, afterTarget = false) {
@@ -3814,6 +3960,200 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
           0,
           source,
         );
+        saveProjects();
+        renderDashboardProjectCards();
+      }
+
+      function toggleDashboardProjectEdit(projectId) {
+        dashboardEditingProjectId = projectId;
+        activeCustomMenu = "";
+        renderDashboardEditModal();
+      }
+
+      function closeDashboardEditModal() {
+        dashboardEditingProjectId = "";
+        activeCustomMenu = "";
+        renderDashboardEditModal();
+      }
+
+      function saveDashboardProjectUpdates(field, value, shouldRender = true) {
+        const project = findProject(dashboardEditingProjectId);
+        if (!project) return;
+
+        project[field] = value;
+
+        if (field === "task" && value !== "Other") {
+          project.customTask = "";
+        }
+
+        saveProjects();
+
+        if (shouldRender) {
+          renderDashboardProjectCards();
+          renderDashboardEditModal();
+        }
+      }
+
+      function setDashboardProjectField(field, value) {
+        saveDashboardProjectUpdates(field, value);
+        activeCustomMenu = "";
+      }
+
+      function renderDashboardMenuControl({
+        label,
+        field,
+        value,
+        options,
+        menuId,
+        withStatusDots = false,
+      }) {
+        const selectedLabel =
+          options.find((option) => option.value === value)?.label ||
+          value ||
+          "Assign";
+
+        return `
+    <div class="control-stack">
+      <label>${escapeHtml(label)}</label>
+      <button class="control-btn" type="button" data-command="toggle-dashboard-menu" data-menu="${escapeHtml(menuId)}">
+        <span class="control-value">
+          ${withStatusDots ? `<span class="status-dot-option" style="background:${statusDotStyle(value)}"></span>` : ""}
+          ${escapeHtml(selectedLabel)}
+        </span>
+        <span class="chevron">⌄</span>
+      </button>
+
+      <div class="custom-menu ${activeCustomMenu === menuId ? "open" : ""}" data-menu-panel="${escapeHtml(menuId)}">
+        ${options
+          .map(
+            (option) => `
+              <button class="picker-option ${option.value === value ? "active" : ""}" type="button" data-command="set-dashboard-project-field" data-project-field="${escapeHtml(field)}" data-value="${escapeHtml(option.value)}">
+                <span class="control-value">
+                  ${withStatusDots ? `<span class="status-dot-option" style="background:${statusDotStyle(option.value)}"></span>` : ""}
+                  ${escapeHtml(option.label)}
+                </span>
+                ${option.value === value ? iconSvg("check") : ""}
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+      }
+
+      function renderDashboardEditModal() {
+        document.getElementById("dashboardEditModal")?.remove();
+
+        const project = findProject(dashboardEditingProjectId);
+        if (!project) return;
+
+        const modal = document.createElement("div");
+        modal.id = "dashboardEditModal";
+        modal.className = "modal open";
+        modal.dataset.modal = "dashboard-project-info";
+
+        modal.innerHTML = `
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="dashboardProjectInfoTitle">
+      <div class="sheet-head">
+        <h2 id="dashboardProjectInfoTitle">Project Information</h2>
+        <button class="small-btn" type="button" data-command="close-dashboard-project-info">
+          ${iconSvg("xmark")} Close
+        </button>
+      </div>
+
+      <div class="project-form-grid">
+        <div class="field wide">
+          <label for="dashboardProjectTitle">Title</label>
+          <input
+            id="dashboardProjectTitle"
+            type="text"
+            value="${escapeHtml(project.title)}"
+            data-dashboard-popup-field="title"
+            placeholder="Project title"
+          />
+        </div>
+
+        ${renderDashboardMenuControl({
+          label: "Current Task",
+          field: "task",
+          value: project.task,
+          menuId: "dashboard-task",
+          options: TASK_OPTIONS.map((task) => ({
+            label: task,
+            value: task,
+          })),
+        })}
+
+        ${renderDashboardMenuControl({
+          label: "Status",
+          field: "status",
+          value: project.status,
+          menuId: "dashboard-status",
+          withStatusDots: true,
+          options: STATUS_OPTIONS.map((status) => ({
+            label: status,
+            value: status,
+          })),
+        })}
+
+        <div class="field wide" ${project.task === "Other" ? "" : "hidden"}>
+          <label for="dashboardCustomTask">Custom Task</label>
+          <input
+            id="dashboardCustomTask"
+            type="text"
+            value="${escapeHtml(project.customTask)}"
+            data-dashboard-popup-field="customTask"
+            placeholder="What kind of project?"
+          />
+        </div>
+
+        <div class="field wide">
+          <label for="dashboardProjectDescription">Project Description</label>
+          <textarea
+            id="dashboardProjectDescription"
+            data-dashboard-popup-field="description"
+            placeholder="Project description"
+          >${escapeHtml(project.description)}</textarea>
+        </div>
+      </div>
+
+      <button class="open-btn" type="button" data-open-project="${escapeHtml(project.id)}">
+        Open Full Project
+      </button>
+    </section>
+  `;
+
+        document.body.appendChild(modal);
+      }
+
+      function deleteProject(projectId) {
+        const project = findProject(projectId);
+        if (!project) return;
+
+        const title = project.title?.trim() || "this project";
+        const confirmed = window.confirm(
+          `Delete ${title}? This cannot be undone.`,
+        );
+
+        if (!confirmed) return;
+
+        projects = projects.filter((project) => project.id !== projectId);
+
+        if (activeProjectId === projectId) {
+          activeProjectId = null;
+          projectView.classList.remove("active");
+          dashboardView.classList.add("active");
+        }
+
+        if (expandedProjectCardId === projectId) {
+          expandedProjectCardId = "";
+        }
+
+        if (dashboardEditingProjectId === projectId) {
+          dashboardEditingProjectId = "";
+        }
+
         saveProjects();
         renderDashboardProjectCards();
       }
@@ -4318,28 +4658,38 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
       function bindDashboardEvents() {
         projectSearch.addEventListener("input", renderDashboardProjectCards);
 
-        projectGrid.addEventListener("click", (event) => {
-          const addButton = event.target.closest(
-            "[data-command='add-project']",
+        document.addEventListener("input", (event) => {
+          const field = event.target.closest("[data-dashboard-popup-field]");
+          if (!field) return;
+
+          saveDashboardProjectUpdates(
+            field.dataset.dashboardPopupField,
+            field.value,
+            false,
           );
 
+          renderDashboardProjectCards();
+        });
+
+        projectGrid.addEventListener("click", (event) => {
           const button = event.target.closest("[data-open-project]");
           const editButton = event.target.closest("[data-edit-project]");
+          const deleteButton = event.target.closest("[data-delete-project]");
           const toggleButton = event.target.closest("[data-card-toggle]");
           const card = event.target.closest("[data-project-card]");
 
-          if (addButton) {
-            addProject();
+          if (deleteButton) {
+            deleteProject(deleteButton.dataset.deleteProject);
+            return;
+          }
+
+          if (editButton) {
+            toggleDashboardProjectEdit(editButton.dataset.editProject);
             return;
           }
 
           if (button) {
             openProject(button.dataset.openProject);
-            return;
-          }
-
-          if (editButton) {
-            openProjectForEditing(editButton.dataset.editProject);
             return;
           }
 
@@ -4412,10 +4762,31 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
         });
 
         document.addEventListener("click", (event) => {
+          const dashboardEditModal = event.target.closest(
+            "[data-modal='dashboard-project-info']",
+          );
+
+          if (event.target === dashboardEditModal) {
+            closeDashboardEditModal();
+            return;
+          }
+
+          const settingsModal = event.target.closest("[data-modal='settings']");
+
+          if (event.target === settingsModal) {
+            closeSettings();
+            return;
+          }
+
           const button = event.target.closest("[data-command]");
           if (!button) return;
 
           const command = button.dataset.command;
+
+          if (command === "add-project") {
+            addProject();
+            return;
+          }
 
           if (command === "open-settings") {
             openSettings();
@@ -4448,6 +4819,26 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
                 input.checked = true;
               });
           }
+
+          if (command === "close-dashboard-project-info") {
+            closeDashboardEditModal();
+          }
+
+          if (command === "toggle-dashboard-menu") {
+            activeCustomMenu =
+              activeCustomMenu === button.dataset.menu
+                ? ""
+                : button.dataset.menu;
+
+            renderDashboardEditModal();
+          }
+
+          if (command === "set-dashboard-project-field") {
+            setDashboardProjectField(
+              button.dataset.projectField,
+              button.dataset.value,
+            );
+          }
         });
 
         document.addEventListener("change", (event) => {
@@ -4455,65 +4846,7 @@ ${copyBlockPopupOpen ? renderAddCopyBlockModal() : ""}
             previewImportFile(event.target.files?.[0]);
           }
         });
-
-        document.addEventListener("click", (event) => {
-          const modal = event.target.closest("[data-modal='settings']");
-          if (event.target === modal) {
-            closeSettings();
-          }
-        });
       }
-      document.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-command]");
-        if (!button) return;
-
-        const command = button.dataset.command;
-
-        if (command === "open-settings") {
-          openSettings();
-        }
-
-        if (command === "close-settings") {
-          closeSettings();
-        }
-
-        if (command === "settings-export-selected") {
-          exportSelectedProjects();
-        }
-
-        if (command === "settings-import-selected") {
-          importSelectedProjects();
-        }
-
-        if (command === "settings-select-all-export") {
-          document
-            .querySelectorAll("[data-settings-export-project]")
-            .forEach((input) => {
-              input.checked = true;
-            });
-        }
-
-        if (command === "settings-select-all-import") {
-          document
-            .querySelectorAll("[data-settings-import-project]")
-            .forEach((input) => {
-              input.checked = true;
-            });
-        }
-      });
-
-      document.addEventListener("change", (event) => {
-        if (event.target.matches("[data-settings-import-file]")) {
-          previewImportFile(event.target.files?.[0]);
-        }
-      });
-
-      document.addEventListener("click", (event) => {
-        const modal = event.target.closest("[data-modal='settings']");
-        if (event.target === modal) {
-          closeSettings();
-        }
-      });
 
       function bindProjectEvents() {
         projectView.addEventListener("input", (event) => {
